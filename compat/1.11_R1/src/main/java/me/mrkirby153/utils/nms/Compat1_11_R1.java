@@ -1,6 +1,5 @@
 package me.mrkirby153.utils.nms;
 
-import me.mrkirby153.utils.nms.NMS;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.server.v1_11_R1.IChatBaseComponent;
 import net.minecraft.server.v1_11_R1.Packet;
