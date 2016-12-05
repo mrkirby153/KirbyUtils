@@ -33,4 +33,7 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
 </project>
