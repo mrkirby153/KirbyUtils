@@ -1,4 +1,4 @@
-package me.mrkirby153.utils;
+package me.mrkirby153.kcutils;
 
 import org.junit.Assert;
 import org.junit.Test;

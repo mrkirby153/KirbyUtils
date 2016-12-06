@@ -1,4 +1,4 @@
-package me.mrkirby153.utils.gui;
+package me.mrkirby153.kcutils.gui;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;

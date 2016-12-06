@@ -1,4 +1,4 @@
-package me.mrkirby153.utils;
+package me.mrkirby153.kcutils;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;

@@ -1,4 +1,4 @@
-package me.mrkirby153.utils.nms;
+package me.mrkirby153.kcutils.nms;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;

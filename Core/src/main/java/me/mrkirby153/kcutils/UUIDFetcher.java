@@ -1,4 +1,4 @@
-package me.mrkirby153.utils;
+package me.mrkirby153.kcutils;
 
 import com.google.common.collect.ImmutableList;
 import org.json.simple.JSONArray;
