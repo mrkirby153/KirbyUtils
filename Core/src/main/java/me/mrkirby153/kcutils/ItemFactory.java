@@ -1,5 +1,6 @@
 package me.mrkirby153.kcutils;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -8,6 +9,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,7 +61,7 @@ public class ItemFactory {
     public ItemStack construct() {
         ItemStack stack = new ItemStack(material, amount, data);
         ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(name);
+        meta.setDisplayName(ChatColor.RESET + name);
         meta.setLore(lore);
         meta.setUnbreakable(unbreakable);
         meta.addItemFlags(flags.toArray(new ItemFlag[0]));
@@ -120,7 +122,9 @@ public class ItemFactory {
      * @return The factory
      */
     public ItemFactory lore(String... lore) {
-        Collections.addAll(this.lore, lore);
+        for (String l : lore) {
+            this.lore.add(ChatColor.RESET + l);
+        }
         return this;
     }
 
@@ -149,6 +153,7 @@ public class ItemFactory {
 
         public GlowEnchantment() {
             super(120);
+            register();
         }
 
         @Override
@@ -179,6 +184,23 @@ public class ItemFactory {
         @Override
         public int getStartLevel() {
             return 1;
+        }
+
+        private void register() {
+            try {
+                // Register enchantment
+                Field f = Enchantment.class.getDeclaredField("acceptingNew");
+                f.setAccessible(true);
+                f.setAccessible(true);
+                boolean previous = f.getBoolean(null);
+                f.set(null, true);
+                if (Enchantment.getByName("NullEnchantment") == null)
+                    Enchantment.registerEnchantment(this);
+
+                f.setBoolean(null, previous);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
