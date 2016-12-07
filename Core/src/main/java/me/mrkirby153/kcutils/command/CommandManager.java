@@ -63,7 +63,7 @@ public class CommandManager implements Listener {
         BaseCommand<?> command = findCommand(commandName);
         if (command != null) {
             event.setCancelled(true);
-            if (!event.getPlayer().hasPermission(command.getPermission())) {
+            if (command.getPermission() != null && !event.getPlayer().hasPermission(command.getPermission())) {
                 if (!event.getPlayer().isOp()) {
                     event.getPlayer().spigot().sendMessage(C.e("You do not have permission to perform this command! You are missing the permission " + command.getPermission()));
                     return;
