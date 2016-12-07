@@ -58,7 +58,8 @@ public class Time {
         if (time == -1) return "Permanent";
 
         if (type == TimeUnit.FIT) {
-            if (time < 60000) type = TimeUnit.SECONDS;
+            if(time < 1000) type = TimeUnit.MILLISECONDS;
+            else if (time < 60000) type = TimeUnit.SECONDS;
             else if (time < 3600000) type = TimeUnit.MINUTES;
             else if (time < 86400000) type = TimeUnit.HOURS;
             else type = TimeUnit.DAYS;
@@ -108,7 +109,8 @@ public class Time {
         DAYS,
         HOURS,
         MINUTES,
-        SECONDS
+        SECONDS,
+        MILLISECONDS
     }
 
 }
