@@ -149,6 +149,13 @@ public class KirbyScoreboard {
     }
 
     /**
+     * Resets the scoreboard (Clears all the lines)
+     */
+    public void reset() {
+        scoreboardElements.clear();
+    }
+
+    /**
      * Called after the scoreboard has been rendered
      */
     private void postDraw() {
