@@ -158,14 +158,14 @@ public class KirbyScoreboard {
     /**
      * Called after the scoreboard has been rendered
      */
-    private void postDraw() {
+    protected void postDraw() {
 
     }
 
     /**
      * Called before the scoreboard is rendered
      */
-    private void preDraw() {
+    protected void preDraw() {
 
     }
 
