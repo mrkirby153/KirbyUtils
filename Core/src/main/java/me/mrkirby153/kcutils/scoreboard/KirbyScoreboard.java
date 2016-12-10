@@ -140,6 +140,15 @@ public class KirbyScoreboard {
     }
 
     /**
+     * Removes a team from the scoreboard
+     *
+     * @param team The team to remove
+     */
+    public void remove(ScoreboardTeam team) {
+        teams.remove(team);
+    }
+
+    /**
      * Called after the scoreboard has been rendered
      */
     private void postDraw() {
@@ -197,6 +206,21 @@ public class KirbyScoreboard {
 
             toRemove.forEach(scoreboardTeam::removeEntry);
             toAdd.forEach(scoreboardTeam::addEntry);
+        });
+        // Remove teams that no longer exist
+        scoreboard.getTeams().forEach(team -> {
+            boolean exists = false;
+            for (ScoreboardTeam t : teams) {
+                if (t.getTeamName().startsWith(team.getName())) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                if (debug)
+                    System.out.println("Unregistering team " + team.getName());
+                team.unregister();
+            }
         });
     }
 
