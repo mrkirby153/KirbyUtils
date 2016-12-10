@@ -140,6 +140,15 @@ public class KirbyScoreboard {
     }
 
     /**
+     * Get the teams registered on the scoreboard
+     *
+     * @return The teams registered on the scoreboard
+     */
+    public Set<ScoreboardTeam> getTeams() {
+        return teams;
+    }
+
+    /**
      * Removes a team from the scoreboard
      *
      * @param team The team to remove
@@ -156,20 +165,6 @@ public class KirbyScoreboard {
     }
 
     /**
-     * Called after the scoreboard has been rendered
-     */
-    protected void postDraw() {
-
-    }
-
-    /**
-     * Called before the scoreboard is rendered
-     */
-    protected void preDraw() {
-
-    }
-
-    /**
      * Clears the score of a line on the scoreboard (Removes it)
      *
      * @param line The line to remove
@@ -182,7 +177,7 @@ public class KirbyScoreboard {
      * Updates the teams on the scoreboard
      */
     private void updateTeams() {
-        teams.forEach(t -> {
+        getTeams().forEach(t -> {
             if (debug)
                 System.out.println("Updating team " + t.getTeamName());
             Team scoreboardTeam = null;
@@ -217,7 +212,7 @@ public class KirbyScoreboard {
         // Remove teams that no longer exist
         scoreboard.getTeams().forEach(team -> {
             boolean exists = false;
-            for (ScoreboardTeam t : teams) {
+            for (ScoreboardTeam t : getTeams()) {
                 if (t.getTeamName().startsWith(team.getName())) {
                     exists = true;
                     break;
@@ -255,6 +250,20 @@ public class KirbyScoreboard {
      */
     protected Objective addObjective(String displayName, DisplaySlot displaySlot) {
         return this.addObjective(displayName, displaySlot, "dummy");
+    }
+
+    /**
+     * Called after the scoreboard has been rendered
+     */
+    protected void postDraw() {
+
+    }
+
+    /**
+     * Called before the scoreboard is rendered
+     */
+    protected void preDraw() {
+
     }
 
 }
