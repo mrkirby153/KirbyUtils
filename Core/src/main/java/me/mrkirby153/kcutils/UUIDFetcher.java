@@ -89,6 +89,26 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
     }
 
     /**
+     * Retrieve the UUID of a player async from Mojang. <b>This does properly handle rate limits</b>
+     *
+     * @param name     The name of the player to retrieve
+     * @param callback The callback called when the UUID is found
+     */
+    public static void getUUIDOfAsync(String name, Callback<UUID> callback) {
+        new Thread(() -> callback.call(new UUIDFetcher(Collections.singletonList(name), true).call().get(name))).start();
+    }
+
+    /**
+     * Retrieve multiple UUIDs of a player asynchronously from Mojang's servers. <b>This does properly handle rate limits</b>
+     *
+     * @param names    The names of the players to retrieve
+     * @param callback The callback called when thte UUID is found.
+     */
+    public static void getUUIDsAsync(List<String> names, Callback<Map<String, UUID>> callback) {
+        new Thread(() -> callback.call(new UUIDFetcher(names, true).call())).start();
+    }
+
+    /**
      * Converts a UUID to a byte array: MSB then LSB
      *
      * @param uuid The UUID to convert
