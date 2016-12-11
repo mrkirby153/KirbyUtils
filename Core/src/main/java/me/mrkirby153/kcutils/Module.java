@@ -41,7 +41,7 @@ public abstract class Module<T extends JavaPlugin> {
      * Loads the module
      */
     public void load() {
-        if(loaded){
+        if (loaded) {
             throw new IllegalArgumentException("Attempting to reload an already loaded module!");
         }
         long startTime = System.currentTimeMillis();
@@ -80,5 +80,40 @@ public abstract class Module<T extends JavaPlugin> {
      */
     protected void registerListener(Listener listener) {
         plugin.getServer().getPluginManager().registerEvents(listener, plugin);
+    }
+
+    protected void runAsync(Runnable runnable) {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
+    }
+
+    /**
+     * Schedules a task to be run later
+     *
+     * @param runnable The task to be run
+     * @param delay    The delay
+     */
+    protected void runLater(Runnable runnable, long delay) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, runnable, delay);
+    }
+
+    /**
+     * Runs a task later asyncronously
+     *
+     * @param runnable The task to run
+     * @param delay    The delay
+     */
+    protected void runLaterAsync(Runnable runnable, long delay) {
+        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, runnable, delay);
+    }
+
+    /**
+     * Schedule a repeating task
+     *
+     * @param runnable     The task to be run
+     * @param initialDelay The initial delay of the task
+     * @param interval     The interval of which the task should be run
+     */
+    protected void scheduleRepeating(Runnable runnable, long initialDelay, long interval) {
+        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, runnable, initialDelay, interval);
     }
 }
