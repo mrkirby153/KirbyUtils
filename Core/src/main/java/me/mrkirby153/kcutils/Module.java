@@ -1,5 +1,6 @@
 package me.mrkirby153.kcutils;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,6 +18,15 @@ public abstract class Module<T extends JavaPlugin> {
         this.name = name;
         this.plugin = plugin;
         this.version = version;
+    }
+
+    /**
+     * Get the plugin's configuration file
+     *
+     * @return The configuration file
+     */
+    public FileConfiguration getConfig() {
+        return plugin.getConfig();
     }
 
     /**
