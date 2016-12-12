@@ -45,6 +45,16 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>1.9.5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <executions>
                     <execution>
@@ -100,5 +110,11 @@
             <url>http://repo.mrkirby153.tk/nexus/content/repositories/releases/</url>
         </repository>
     </distributionManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/mrkirby153/KirbyUtils.git</connection>
+        <developerConnection>scm:git:https://github.com/mrkirby153/KirbyUtils.git</developerConnection>
+        <url>https://github.com/mrkirby153/KirbyUtils.git</url>
+    </scm>
 
 </project>
