@@ -75,6 +75,10 @@ public class BossBar extends Module<JavaPlugin> implements Listener {
         org.bukkit.boss.BossBar bar = playerBossBars.get(player.getUniqueId());
         if (bar == null)
             return;
+        if(percent < 0)
+            percent = 0;
+        if(percent > 1)
+            percent = 1;
         bar.setProgress(percent);
     }
 
