@@ -1,5 +1,6 @@
 package me.mrkirby153.kcutils.nms;
 
+import me.mrkirby153.kcutils.nms.protocollib.CompatProtocolLib;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class NMSFactory {
@@ -18,21 +19,30 @@ public class NMSFactory {
 
     public NMS getNMS() {
         plugin.getLogger().info("Attempting to load NMS compatibility");
-        for (String className : nmsVersions) {
-            className = NMS_CLASS_FORMAT + className;
-            plugin.getLogger().info(String.format("Attempting to load class %s", className));
-            try {
-                NMS nms = (NMS) Class.forName(className).newInstance();
-                plugin.getLogger().info(String.format("Using compatibility class %s implementing NMS version %s", className, nms.getNMSVersion()));
-                nms.enable(plugin);
-                return nms;
-            } catch (Throwable t) {
-                // Ignore
+        if(plugin.getServer().getPluginManager().getPlugin("ProtocolLib") != null){
+            // Load the protocol lib compatibility version
+            CompatProtocolLib compat = new CompatProtocolLib();
+            compat.enable(this.plugin);
+            plugin.getLogger().info("Detected ProtocolLib, using ProtocolLib for NMS handling");
+            return compat;
+        } else {
+            plugin.getLogger().info("ProtocolLib not installed or not loaded, attempting to load NMS fallback");
+            for (String className : nmsVersions) {
+                className = NMS_CLASS_FORMAT + className;
+                plugin.getLogger().info(String.format("Attempting to load class %s", className));
+                try {
+                    NMS nms = (NMS) Class.forName(className).newInstance();
+                    plugin.getLogger().info(String.format("Using compatibility class %s implementing NMS version %s", className, nms.getNMSVersion()));
+                    nms.enable(plugin);
+                    return nms;
+                } catch (Throwable t) {
+                    // Ignore
+                }
             }
+            plugin.getLogger().warning("Could not find a compatibility class!");
+            plugin.getLogger().warning("\t+ Bukkit version: " + plugin.getServer().getBukkitVersion());
+            plugin.getLogger().warning("\t+ Server version: " + plugin.getServer().getVersion());
         }
-        plugin.getLogger().warning("Could not find a compatibility class!");
-        plugin.getLogger().warning("\t+ Bukkit version: " + plugin.getServer().getBukkitVersion());
-        plugin.getLogger().warning("\t+ Server version: " + plugin.getServer().getVersion());
         return null;
     }
 }

@@ -117,7 +117,7 @@ public class C {
         }
     }
 
-    enum Style {
+    public enum Style {
         BOLD,
         ITALIC,
         STRIKETHROUGH,
