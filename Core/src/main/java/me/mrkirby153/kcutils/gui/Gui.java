@@ -78,7 +78,8 @@ public abstract class Gui<T extends JavaPlugin> implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
-        inventoryClose();
+        if(event.getInventory().equals(this.inventory))
+            inventoryClose();
     }
 
     public void onOpen() {
