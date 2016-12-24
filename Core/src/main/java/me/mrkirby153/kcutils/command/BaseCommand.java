@@ -18,14 +18,14 @@ public abstract class BaseCommand<T extends JavaPlugin> {
 
     private String aliasUsed;
 
-    public BaseCommand(T instance, String name, String permission, String... aliases) {
+    public BaseCommand(T instance, String name, String permission, String[] aliases) {
         this.name = name;
         this.instance = instance;
         this.permission = permission;
         this.aliases = aliases;
     }
 
-    public BaseCommand(T instance, String name, String... aliases) {
+    public BaseCommand(T instance, String name, String[] aliases) {
         this(instance, name, null, aliases);
     }
 
