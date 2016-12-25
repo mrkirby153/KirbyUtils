@@ -18,7 +18,7 @@ public class UpdateEventHandler extends Module<JavaPlugin> implements Runnable {
             ticks = 1;
         }
         for(UpdateType t : UpdateType.values()){
-            if(t.getUpdateTime() % ticks == 0){
+            if(t.elapsed(ticks)){
                 getPlugin().getServer().getPluginManager().callEvent(new UpdateEvent(t));
             }
         }

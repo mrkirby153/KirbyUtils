@@ -63,6 +63,19 @@ public abstract class Module<T extends JavaPlugin> {
         loaded = true;
     }
 
+    public void unload(){
+        if(!loaded){
+            throw new IllegalArgumentException("Attempting to unload a module that hasn't been loaded!");
+        }
+        long startTime = System.currentTimeMillis();
+        log("Loading version " + version);
+        disable();
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+        log("Unloaded in " + (elapsedTime < 1 ? "< 1 millisecond" : Time.format(1, elapsedTime, Time.TimeUnit.FIT)));
+        loaded = false;
+    }
+
     /**
      * Gets the plugin that loaded the module
      *
@@ -73,6 +86,10 @@ public abstract class Module<T extends JavaPlugin> {
     }
 
     protected abstract void init();
+
+    protected void disable(){
+
+    }
 
     /**
      * Log a message to the plugin's log
