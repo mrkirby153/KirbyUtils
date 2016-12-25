@@ -61,7 +61,8 @@ public class ItemFactory {
     public ItemStack construct() {
         ItemStack stack = new ItemStack(material, amount, data);
         ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(ChatColor.RESET + name);
+        if (name != null)
+            meta.setDisplayName(ChatColor.RESET + name);
         meta.setLore(lore);
         meta.setUnbreakable(unbreakable);
         meta.addItemFlags(flags.toArray(new ItemFlag[0]));
