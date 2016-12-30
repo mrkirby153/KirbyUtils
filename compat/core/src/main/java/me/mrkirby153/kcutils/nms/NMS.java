@@ -15,4 +15,6 @@ public interface NMS {
     void title(Player player, String title, String subtitle);
 
     void actionBar(Player player, BaseComponent component);
+
+    void removeOceans();
 }

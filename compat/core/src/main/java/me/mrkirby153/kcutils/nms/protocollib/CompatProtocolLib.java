@@ -8,6 +8,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.google.common.base.Throwables;
 import me.mrkirby153.kcutils.nms.NMS;
+import me.mrkirby153.kcutils.nms.NMSFactory;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +21,8 @@ public class CompatProtocolLib implements NMS {
 
     private ProtocolManager protocolManager;
 
+    private NMS nms;
+
     @Override
     public void actionBar(Player player, BaseComponent component) {
         PacketContainer actionBar = protocolManager.createPacket(PacketType.Play.Server.CHAT);
@@ -29,8 +32,16 @@ public class CompatProtocolLib implements NMS {
     }
 
     @Override
+    public void removeOceans() {
+        if (nms == null)
+            throw new IllegalArgumentException("Could not remove oceans as there is no NMS compatibility class for this version!");
+        nms.removeOceans();
+    }
+
+    @Override
     public void enable(JavaPlugin plugin) {
         this.protocolManager = ProtocolLibrary.getProtocolManager();
+        nms = new NMSFactory(plugin).getNMS(false, true);
     }
 
     @Override
