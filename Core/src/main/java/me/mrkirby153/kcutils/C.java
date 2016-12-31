@@ -1,5 +1,6 @@
 package me.mrkirby153.kcutils;
 
+import me.mrkirby153.kcutils.format.FormatKey;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -7,10 +8,16 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Class for constructing chat messages
  */
 public class C {
+
+    private static final String FORMATTER_REGEX = "\\{[A-Za-z0-9]+}";
 
     /**
      * Constructs an error message
@@ -92,6 +99,43 @@ public class C {
     public static TextComponent m(String tag, String message) {
         TextComponent component = formattedChat(tag + "> ", ChatColor.BLUE);
         component.addExtra(formattedChat(message, ChatColor.GRAY));
+        return component;
+    }
+
+    /**
+     * Generates a message
+     *
+     * @param tag     A tag to prepend the message
+     * @param message The message to generate
+     * @param keys    The keys to be replaced in the message. A key matches the following regex: <code>{[A-Za-z0-9]+}</code>
+     * @return A {@link TextComponent} of the message
+     */
+    public static TextComponent m(String tag, String message, FormatKey... keys) {
+        TextComponent component = formattedChat(tag + "> ", ChatColor.BLUE);
+        Matcher matcher = Pattern.compile(FORMATTER_REGEX).matcher(message);
+        int startIndex = 0;
+
+        HashMap<String, String> keyLookupTable = new HashMap<>();
+        for (FormatKey k : keys) {
+            keyLookupTable.put(k.getKey(), k.getValue().toString());
+        }
+
+        while (matcher.find()) {
+            String m = message.substring(startIndex, matcher.start() - 1);
+            component.addExtra(formattedChat(m + " ", ChatColor.GRAY));
+            String replacer = message.substring(matcher.start(), matcher.end()).replaceAll("\\{|}", "");
+
+            if (keyLookupTable.containsKey(replacer)) {
+                component.addExtra(formattedChat(keyLookupTable.get(replacer), ChatColor.GOLD));
+            } else {
+                component.addExtra(formattedChat("{" + replacer + "}", ChatColor.GOLD));
+            }
+
+            startIndex = matcher.end();
+        }
+        if (!message.substring(startIndex).isEmpty())
+            component.addExtra(formattedChat(message.substring(startIndex), ChatColor.GRAY));
+
         return component;
     }
 
