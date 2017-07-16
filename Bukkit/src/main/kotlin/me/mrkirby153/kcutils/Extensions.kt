@@ -14,7 +14,7 @@ fun Player.sendMessage(component: BaseComponent) = this.spigot().sendMessage(com
 
 @JvmOverloads
 fun component(text: String? = null, color: ChatColor = ChatColor.WHITE): TextComponentBuilder = TextComponentBuilder().apply {
-    if(text != null)
+    if (text != null)
         this.text = text
     this.color = color
 }
@@ -22,9 +22,19 @@ fun component(text: String? = null, color: ChatColor = ChatColor.WHITE): TextCom
 inline fun component(text: String? = null, value: TextComponentBuilder.() -> Unit): TextComponentBuilder {
     return component(text).apply(value)
 }
-inline fun component(text: String? = null, color: ChatColor, value: TextComponentBuilder.() -> Unit): TextComponentBuilder{
+
+inline fun component(text: String? = null, color: ChatColor, value: TextComponentBuilder.() -> Unit): TextComponentBuilder {
     return component(text, color).apply(value)
 }
+
+fun itemStack(material: Material, data: Int = 0): ItemStackBuilder = ItemStackBuilder(material, data)
+
+inline fun itemStack(material: Material, value: ItemStackBuilder.() -> Unit): ItemStackBuilder {
+    return itemStack(material).apply(value)
+}
+
+inline fun itemStack(material: Material, data: Int, value: ItemStackBuilder.() -> Unit): ItemStackBuilder = itemStack(material, data).apply(value)
+
 /**
  * Checks if a block is safe for players to teleport to
  * Criteria: Not a liquid or not below a liquid; This and the block above are air
