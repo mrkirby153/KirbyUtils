@@ -42,7 +42,7 @@ subprojects {
         repositories{
             maven {
                 name = "mrkirby153"
-                url = "http://repo.mrkirby153.tk/nexus/content/repositories/snapshots/"
+                url = "https://repo.mrkirby153.tk/nexus/content/repositories/snapshots/"
                 credentials {
                     username project.repositoryUsername
                     password project.repositoryPassword
