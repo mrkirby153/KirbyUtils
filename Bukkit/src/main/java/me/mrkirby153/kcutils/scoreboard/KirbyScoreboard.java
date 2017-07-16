@@ -188,7 +188,7 @@ public class KirbyScoreboard {
                 scoreboardTeam = scoreboard.registerNewTeam(t.getFilteredName());
             String prefix = t.getColor() + "";
             if (t.showPrefix()) {
-                prefix += String.format("[%s]", t.getPrefix().toUpperCase());
+                prefix += t.getPrefixColor() + String.format(t.getPrefixFormat(), t.getPrefix().toUpperCase()) + t.getColor();
             }
             scoreboardTeam.setPrefix(prefix);
             scoreboardTeam.setSuffix(ChatColor.RESET + "");

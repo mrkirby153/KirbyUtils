@@ -3,7 +3,10 @@ package me.mrkirby153.kcutils.scoreboard;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 
 public class ScoreboardTeam {
 
@@ -12,6 +15,9 @@ public class ScoreboardTeam {
     protected Set<UUID> players = new HashSet<>();
 
     protected ChatColor color;
+    protected ChatColor prefixColor;
+
+    protected String prefixFormat = "[%s]";
 
     protected boolean showPrefix = false;
     protected String prefix = null;
@@ -22,6 +28,7 @@ public class ScoreboardTeam {
     public ScoreboardTeam(String teamName, ChatColor color) {
         this.teamName = teamName;
         this.color = color;
+        this.prefixColor = color;
     }
 
     public void addPlayer(Player player) {
@@ -55,6 +62,22 @@ public class ScoreboardTeam {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    public ChatColor getPrefixColor() {
+        return prefixColor;
+    }
+
+    public void setPrefixColor(ChatColor prefixColor) {
+        this.prefixColor = prefixColor;
+    }
+
+    public String getPrefixFormat() {
+        return prefixFormat;
+    }
+
+    public void setPrefixFormat(String prefixFormat) {
+        this.prefixFormat = prefixFormat;
     }
 
     public String getTeamName() {
