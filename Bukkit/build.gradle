@@ -1,0 +1,10 @@
+repositories {
+    maven {
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+    }
+}
+
+dependencies {
+    shadow project(':KirbyUtils-Common')
+    compile 'org.spigotmc:spigot-api:1.11-R0.1-SNAPSHOT'
+}

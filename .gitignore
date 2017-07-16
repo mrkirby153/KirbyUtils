@@ -19,4 +19,6 @@ dependency-reduced-pom.xml
 # .bak files
 *.bak
 
-classes/
+build/
+.gradle/
+gradle\.properties

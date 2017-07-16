@@ -1,0 +1,60 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    group = 'me.mrkirby153'
+    version = '1.1-SNAPSHOT'
+
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url = "https://oss.sonatype.org/content/groups/public/"
+        }
+    }
+
+    configurations {
+        compile.extendsFrom shadow
+    }
+
+    shadowJar{
+        classifier = null
+        configurations = [project.configurations.shadow]
+    }
+
+    publishing {
+        tasks.publish.dependsOn build
+        repositories{
+            maven {
+                name = "mrkirby153"
+                url = "http://repo.mrkirby153.tk/nexus/content/repositories/snapshots/"
+                credentials {
+                    username project.repositoryUsername
+                    password project.repositoryPassword
+                }
+            }
+        }
+        publications {
+            jar(MavenPublication){
+                from components.java
+            }
+        }
+    }
+
+    build.dependsOn shadowJar
+}

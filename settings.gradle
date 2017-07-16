@@ -1,0 +1,6 @@
+rootProject.name = 'KirbyUtils'
+
+include 'Common', 'Bukkit'
+
+project(":Common").name = 'KirbyUtils-Common'
+project(":Bukkit").name = 'KirbyUtils-Bukkit'
