@@ -13,6 +13,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 /**
  * Fetches player UUIDs from their minecraft username
@@ -92,10 +93,10 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
      * Retrieve the UUID of a player async from Mojang. <b>This does properly handle rate limits</b>
      *
      * @param name     The name of the player to retrieve
-     * @param callback The callback called when the UUID is found
+     * @param consumer The callback called when the UUID is found
      */
-    public static void getUUIDOfAsync(String name, Callback<UUID> callback) {
-        new Thread(() -> callback.call(new UUIDFetcher(Collections.singletonList(name), true).call().get(name))).start();
+    public static void getUUIDOfAsync(String name, Consumer<UUID> consumer) {
+        new Thread(() -> consumer.accept(new UUIDFetcher(Collections.singletonList(name), true).call().get(name))).start();
     }
 
     /**
@@ -104,8 +105,8 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
      * @param names    The names of the players to retrieve
      * @param callback The callback called when thte UUID is found.
      */
-    public static void getUUIDsAsync(List<String> names, Callback<Map<String, UUID>> callback) {
-        new Thread(() -> callback.call(new UUIDFetcher(names, true).call())).start();
+    public static void getUUIDsAsync(List<String> names, Consumer<Map<String, UUID>> callback) {
+        new Thread(() -> callback.accept(new UUIDFetcher(names, true).call())).start();
     }
 
     /**
