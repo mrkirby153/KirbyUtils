@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -14,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * An abstract class of a gui
@@ -23,7 +25,7 @@ import java.util.Map;
 public abstract class Gui<T extends JavaPlugin> implements Listener {
 
     protected T plugin;
-    protected Map<Integer, Action> actions = new HashMap<>();
+    protected Map<Integer, BiConsumer<Player, ClickType>> actions = new HashMap<>();
     private Inventory inventory;
     private Player player;
 
@@ -70,15 +72,15 @@ public abstract class Gui<T extends JavaPlugin> implements Listener {
         ItemStack is = event.getView().getItem(event.getRawSlot());
         if (is.getType() == Material.AIR)
             actions.remove(slot);
-        Action a = getAction(slot);
-        if (a != null && event.getWhoClicked() instanceof Player) {
-            a.onClick((Player) event.getWhoClicked(), event.getClick());
+        BiConsumer<Player, ClickType> consumer = getAction(slot);
+        if(consumer != null && event.getWhoClicked() instanceof Player){
+            consumer.accept((Player) event.getWhoClicked(), event.getClick());
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent event) {
-        if(event.getInventory().equals(this.inventory))
+        if (event.getInventory().equals(this.inventory))
             inventoryClose();
     }
 
@@ -97,12 +99,12 @@ public abstract class Gui<T extends JavaPlugin> implements Listener {
     }
 
     /**
-     * Gets the {@link Action} in a slot
+     * Gets the {@link BiConsumer Action} in a slot
      *
      * @param slot The slot
      * @return The action
      */
-    private Action getAction(int slot) {
+    private BiConsumer<Player, ClickType> getAction(int slot) {
         return actions.get(slot);
     }
 
@@ -113,7 +115,7 @@ public abstract class Gui<T extends JavaPlugin> implements Listener {
      * @param item   The item to add
      * @param action The action to add
      */
-    protected final void addButton(int slot, ItemStack item, Action action) {
+    protected final void addButton(int slot, ItemStack item, BiConsumer<Player, ClickType> action) {
         actions.put(slot, action);
         getInventory().setItem(slot, item);
     }
