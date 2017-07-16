@@ -2,9 +2,13 @@ repositories {
     maven {
         url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
     }
+    maven {
+        url="http://repo.dmulloy2.net/content/groups/public/"
+    }
 }
 
 dependencies {
     shadow project(':KirbyUtils-Common')
     compile 'org.spigotmc:spigot-api:1.11-R0.1-SNAPSHOT'
+    compile group: 'com.comphenix.protocol', name: 'ProtocolLib', version: '4.3.1-20170708.061412-5'
 }
