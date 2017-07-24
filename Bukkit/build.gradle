@@ -11,7 +11,7 @@ repositories {
 dependencies {
     shadow project(':KirbyUtils-Common')
     compile 'org.spigotmc:spigot-api:1.11-R0.1-SNAPSHOT'
-    compile group: 'com.comphenix.protocol', name: 'ProtocolLib', version: '4.3.1-20170708.061412-5'
+    compile group: 'com.comphenix.protocol', name: 'ProtocolLib', version: '4.4.0-SNAPSHOT'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 }
 buildscript {
