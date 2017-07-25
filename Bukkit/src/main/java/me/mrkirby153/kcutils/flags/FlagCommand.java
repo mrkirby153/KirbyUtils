@@ -33,9 +33,9 @@ public class FlagCommand extends BaseCommand<JavaPlugin> {
             FlagSettings settings = module.getFlags(toActOn);
             settings.getSetFlags().forEach((flag, state) -> {
                 flags.append(state ? ChatColor.GREEN : ChatColor.RED);
-                flags.append(flag.toString());
+                flags.append(flag.toString()).append(", ");
             });
-            player.sendMessage(flags.toString());
+            player.sendMessage(flags.toString().substring(0, flags.length()-2));
         }
         if (args.length == 2) {
             String flag = args[0];
