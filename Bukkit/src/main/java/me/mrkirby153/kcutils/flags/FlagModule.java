@@ -43,6 +43,10 @@ public class FlagModule extends Module<JavaPlugin> {
         return settings;
     }
 
+    public boolean initialized(World world){
+        return this.worldSettings.containsKey(world.getName());
+    }
+
     public void set(World world, WorldFlags flag, boolean state, boolean announce) {
         if (!worldSettings.containsKey(world.getName()))
             return;

@@ -20,6 +20,11 @@ public class FlagCommand extends BaseCommand<JavaPlugin> {
     public void execute(Player player, String[] args) {
         World toActOn = player.getWorld();
 
+        if(!module.initialized(toActOn)){
+            player.sendMessage(C.legacyError("World is not initialized for flags!"));
+            return;
+        }
+
         if (args.length == 0) {
             // Build a list of flags and their state
             StringBuilder flags = new StringBuilder();
