@@ -17,6 +17,10 @@ import java.util.regex.Pattern;
  */
 public class C {
 
+    public static ChatColor ACCENT_COLOR = ChatColor.GOLD;
+    public static ChatColor TAG_COLOR = ChatColor.BLUE;
+    public static ChatColor TEXT_COLOR = ChatColor.GRAY;
+
     private static final String FORMATTER_REGEX = "\\{[A-Za-z0-9]+}";
 
     /**
@@ -97,8 +101,8 @@ public class C {
      * @return A {@link TextComponent} of the message
      */
     public static TextComponent m(String tag, String message) {
-        TextComponent component = formattedChat(tag + "> ", ChatColor.BLUE);
-        component.addExtra(formattedChat(message, ChatColor.GRAY));
+        TextComponent component = formattedChat(tag + "> ", TAG_COLOR);
+        component.addExtra(formattedChat(message, TEXT_COLOR));
         return component;
     }
 
@@ -111,7 +115,7 @@ public class C {
      * @return A {@link TextComponent} of the message
      */
     public static TextComponent m(String tag, String message, FormatKey... keys) {
-        TextComponent component = formattedChat(tag + "> ", ChatColor.BLUE);
+        TextComponent component = formattedChat(tag + "> ", TAG_COLOR);
         Matcher matcher = Pattern.compile(FORMATTER_REGEX).matcher(message);
         int startIndex = 0;
 
@@ -122,19 +126,19 @@ public class C {
 
         while (matcher.find()) {
             String m = message.substring(startIndex, matcher.start() - 1);
-            component.addExtra(formattedChat(m + " ", ChatColor.GRAY));
+            component.addExtra(formattedChat(m + " ", TEXT_COLOR));
             String replacer = message.substring(matcher.start(), matcher.end()).replaceAll("\\{|}", "");
 
             if (keyLookupTable.containsKey(replacer)) {
-                component.addExtra(formattedChat(keyLookupTable.get(replacer), ChatColor.GOLD));
+                component.addExtra(formattedChat(keyLookupTable.get(replacer),ACCENT_COLOR));
             } else {
-                component.addExtra(formattedChat("{" + replacer + "}", ChatColor.GOLD));
+                component.addExtra(formattedChat("{" + replacer + "}", ACCENT_COLOR));
             }
 
             startIndex = matcher.end();
         }
         if (!message.substring(startIndex).isEmpty())
-            component.addExtra(formattedChat(message.substring(startIndex), ChatColor.GRAY));
+            component.addExtra(formattedChat(message.substring(startIndex), TEXT_COLOR));
 
         return component;
     }
