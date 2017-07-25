@@ -17,11 +17,10 @@ import java.util.regex.Pattern;
  */
 public class C {
 
+    private static final String FORMATTER_REGEX = "\\{[A-Za-z0-9]+}";
     public static ChatColor ACCENT_COLOR = ChatColor.GOLD;
     public static ChatColor TAG_COLOR = ChatColor.BLUE;
     public static ChatColor TEXT_COLOR = ChatColor.GRAY;
-
-    private static final String FORMATTER_REGEX = "\\{[A-Za-z0-9]+}";
 
     /**
      * Constructs an error message
@@ -130,7 +129,7 @@ public class C {
             String replacer = message.substring(matcher.start(), matcher.end()).replaceAll("\\{|}", "");
 
             if (keyLookupTable.containsKey(replacer)) {
-                component.addExtra(formattedChat(keyLookupTable.get(replacer),ACCENT_COLOR));
+                component.addExtra(formattedChat(keyLookupTable.get(replacer), ACCENT_COLOR));
             } else {
                 component.addExtra(formattedChat("{" + replacer + "}", ACCENT_COLOR));
             }
@@ -140,6 +139,24 @@ public class C {
         if (!message.substring(startIndex).isEmpty())
             component.addExtra(formattedChat(message.substring(startIndex), TEXT_COLOR));
 
+        return component;
+    }
+
+    public static BaseComponent m(String tag, String message, Object... replacements) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(TAG_COLOR);
+        builder.append(tag);
+        builder.append("> ");
+        builder.append(TEXT_COLOR);
+        for (int i = 0; i < replacements.length; i += 2) {
+            message = message.replace(replacements[i].toString(), ACCENT_COLOR + replacements[i + 1].toString() + TEXT_COLOR);
+        }
+        builder.append(message);
+        BaseComponent[] components = TextComponent.fromLegacyText(builder.toString());
+        BaseComponent component = components[0];
+        for (int i = 1; i < components.length; i++) {
+            component.addExtra(components[i]);
+        }
         return component;
     }
 
