@@ -6,7 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
-import org.bukkit.event.player.PlayerBucketEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -104,7 +105,12 @@ public class FlagListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onBlockPiston(BlockPistonEvent event) {
+    public void onBlockPistonExtend(BlockPistonExtendEvent event) {
+        event.setCancelled(module.shouldCancel(event.getBlock().getWorld(), WorldFlags.BLOCK_PUSH));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockPistonRetract(BlockPistonRetractEvent event) {
         event.setCancelled(module.shouldCancel(event.getBlock().getWorld(), WorldFlags.BLOCK_PUSH));
     }
 
@@ -157,7 +163,12 @@ public class FlagListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerBucket(PlayerBucketEvent event) {
+    public void onPlayerBucketFill(PlayerBucketFillEvent event) {
+        event.setCancelled(module.shouldCancel(event.getBlockClicked().getWorld(), WorldFlags.BUCKET_USE));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
         event.setCancelled(module.shouldCancel(event.getBlockClicked().getWorld(), WorldFlags.BUCKET_USE));
     }
 
