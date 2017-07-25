@@ -6,10 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 import java.util.ArrayList;
@@ -140,6 +137,16 @@ public class FlagListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
+    public void onEntityRegainHealth(EntityRegainHealthEvent event) {
+        event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.HEALTH_REGEN));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.HUNGER_DEPLETE));
+    }
+
+    @EventHandler(ignoreCancelled = true)
     public void onEntitySpawn(CreatureSpawnEvent event) {
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.JOCKEY) {
             event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.HOSTILE_SPAWN));
@@ -163,19 +170,43 @@ public class FlagListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
+    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
+        event.setCancelled(module.shouldCancel(event.getBlockClicked().getWorld(), WorldFlags.BUCKET_USE));
+    }
+
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
         event.setCancelled(module.shouldCancel(event.getBlockClicked().getWorld(), WorldFlags.BUCKET_USE));
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
-        event.setCancelled(module.shouldCancel(event.getBlockClicked().getWorld(), WorldFlags.BUCKET_USE));
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        event.setCancelled(module.shouldCancel(event.getPlayer().getWorld(), WorldFlags.ITEM_DROP));
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             event.setCancelled(module.shouldCancel(event.getClickedBlock().getWorld(), WorldFlags.BLOCK_INTERACT));
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        event.setCancelled(module.shouldCancel(event.getPlayer().getWorld(), WorldFlags.ITEM_PICKUP));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onLeavesDecay(LeavesDecayEvent event) {
+        event.setCancelled(module.shouldCancel(event.getBlock().getWorld(), WorldFlags.LEAF_DECAY));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if(event.getCause() == EntityDamageEvent.DamageCause.FALL)
+            return;
+        if(event.getDamager().getType() == EntityType.PLAYER){
+            event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.PVP_ENABLE));
         }
     }
 
@@ -200,8 +231,10 @@ public class FlagListener implements Listener {
     public void playerDamage(EntityDamageEvent event) {
         if (event.getCause() == EntityDamageEvent.DamageCause.FALL)
             return; // Fall damage is its own flag
-        if (event.getEntity().getType() == EntityType.PLAYER) {
+        if (event.getEntity().getType()== EntityType.PLAYER) {
             event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.PVE_ENABLE));
         }
     }
+
+
 }

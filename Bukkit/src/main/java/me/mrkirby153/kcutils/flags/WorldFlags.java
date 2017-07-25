@@ -67,8 +67,13 @@ public enum WorldFlags {
     // Health will regenerate
     HEALTH_REGEN(true, "Health Regeneration"),
 
-    // Hunger will deplete
-    HUNGER_DEPLETE(true, "Hunger Depletion");
+    HUNGER_DEPLETE(true, "Hunger Depletion"),
+
+    // Players can drop items
+    ITEM_DROP(true, "Item Dropping"),
+
+    // Players  can pickup items
+    ITEM_PICKUP(true, "Item Pickup");
 
     private final boolean defaultEnabled;
 
