@@ -126,7 +126,7 @@ public class FlagListener implements Listener {
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getDamager().getType() == EntityType.PLAYER) {
             if (event.getEntity().getType() == EntityType.PLAYER) {
-                event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.PVE_ENABLE));
+                event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.PVP_ENABLE));
             }
         }
     }
@@ -229,7 +229,7 @@ public class FlagListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void playerDamage(EntityDamageEvent event) {
-        if (event.getCause() == EntityDamageEvent.DamageCause.FALL)
+        if (event.getCause() == EntityDamageEvent.DamageCause.FALL || event.getCause() == EntityDamageEvent.DamageCause.VOID)
             return; // Fall damage is its own flag
         if (event.getEntity().getType()== EntityType.PLAYER) {
             event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.PVE_ENABLE));
