@@ -123,6 +123,15 @@ public class FlagListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (event.getCause() == EntityDamageEvent.DamageCause.FALL)
+            return;
+        if (event.getDamager().getType() == EntityType.PLAYER) {
+            event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.PVP_ENABLE));
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getDamager().getType() == EntityType.PLAYER) {
             if (event.getEntity().getType() == EntityType.PLAYER) {
@@ -138,12 +147,9 @@ public class FlagListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onEntityRegainHealth(EntityRegainHealthEvent event) {
-        event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.HEALTH_REGEN));
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.HUNGER_DEPLETE));
+        if (event.getEntityType() == EntityType.PLAYER)
+            if (event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED)
+                event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.HEALTH_REGEN));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -167,6 +173,16 @@ public class FlagListener implements Listener {
         if (event.getEntity().getType() == EntityType.PLAYER && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
             event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.FALL_DAMAGE));
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.HUNGER_DEPLETE));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onLeavesDecay(LeavesDecayEvent event) {
+        event.setCancelled(module.shouldCancel(event.getBlock().getWorld(), WorldFlags.LEAF_DECAY));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -197,20 +213,6 @@ public class FlagListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onLeavesDecay(LeavesDecayEvent event) {
-        event.setCancelled(module.shouldCancel(event.getBlock().getWorld(), WorldFlags.LEAF_DECAY));
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onEntityDamage(EntityDamageByEntityEvent event) {
-        if(event.getCause() == EntityDamageEvent.DamageCause.FALL)
-            return;
-        if(event.getDamager().getType() == EntityType.PLAYER){
-            event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.PVP_ENABLE));
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
     public void onPlayerShearEntity(PlayerShearEntityEvent event) {
         event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.SHEEP_SHEARING));
     }
@@ -231,7 +233,7 @@ public class FlagListener implements Listener {
     public void playerDamage(EntityDamageEvent event) {
         if (event.getCause() == EntityDamageEvent.DamageCause.FALL || event.getCause() == EntityDamageEvent.DamageCause.VOID)
             return; // Fall damage is its own flag
-        if (event.getEntity().getType()== EntityType.PLAYER) {
+        if (event.getEntity().getType() == EntityType.PLAYER) {
             event.setCancelled(module.shouldCancel(event.getEntity().getWorld(), WorldFlags.PVE_ENABLE));
         }
     }
