@@ -45,7 +45,16 @@ public class ProtocolLib extends Module<JavaPlugin> {
      */
     public void sendActionBar(Player player, BaseComponent component) {
         PacketContainer actionBar = protocolManager.createPacket(PacketType.Play.Server.CHAT);
-        actionBar.getBytes().write(0, (byte) 2);
+        try {
+            actionBar.getChatTypes().write(0, EnumWrappers.ChatType.GAME_INFO);
+        } catch (Exception e){
+            // Ignore
+        }
+        try {
+            actionBar.getBytes().write(0, (byte) 2);
+        } catch (Exception e){
+            // Ignore
+        }
         actionBar.getChatComponents().write(0, WrappedChatComponent.fromText(component.toLegacyText()));
         sendPacket(player, actionBar);
     }
