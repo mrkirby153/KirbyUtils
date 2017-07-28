@@ -61,6 +61,11 @@ public abstract class Gui<T extends JavaPlugin> implements Listener {
 
     }
 
+    protected void clear(){
+        this.actions.clear();
+        this.inventory.clear();
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getClickedInventory() == null)
