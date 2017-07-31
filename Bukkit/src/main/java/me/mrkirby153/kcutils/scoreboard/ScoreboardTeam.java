@@ -100,6 +100,10 @@ public class ScoreboardTeam {
         players.remove(player.getUniqueId());
     }
 
+    public void removePlayer(UUID uuid){
+        players.remove(uuid);
+    }
+
     public void setSeeInvisible(boolean seeInvisible) {
         this.seeInvisible = seeInvisible;
     }
