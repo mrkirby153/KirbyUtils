@@ -7,6 +7,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Arrays;
+
 public class FlagCommand extends BaseCommand<JavaPlugin> {
 
     private FlagModule module;
@@ -39,15 +41,23 @@ public class FlagCommand extends BaseCommand<JavaPlugin> {
         }
         if (args.length == 2) {
             String flag = args[0];
-            boolean state = Boolean.parseBoolean(args[1]);
-            WorldFlags f;
-            try {
-                f = WorldFlags.valueOf(flag.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                player.spigot().sendMessage(C.e("That is not a valid flag!"));
-                return;
+            boolean all = false;
+            if(flag.equalsIgnoreCase("all")){
+                all = true;
             }
-            module.set(toActOn, f, state);
+            boolean state = Boolean.parseBoolean(args[1]);
+            if(!all) {
+                WorldFlags f;
+                try {
+                    f = WorldFlags.valueOf(flag.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    player.spigot().sendMessage(C.e("That is not a valid flag!"));
+                    return;
+                }
+                module.set(toActOn, f, state);
+            } else {
+                Arrays.stream(WorldFlags.values()).forEach(f -> module.set(toActOn, f, state));
+            }
         }
     }
 }
