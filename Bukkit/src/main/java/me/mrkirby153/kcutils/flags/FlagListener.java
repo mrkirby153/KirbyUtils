@@ -160,10 +160,10 @@ public class FlagListener implements Listener {
         }
         if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL)
             return;
-        if (module.shouldCancel(event.getEntity().getWorld(), WorldFlags.PEACEFUL_SPAWN)) {
+        if (module.shouldCancel(event.getEntity().getWorld(), WorldFlags.PEACEFUL_SPAWN) && peaceful.contains(event.getEntityType())) {
             event.setCancelled(peaceful.contains(event.getEntityType()));
         }
-        if (module.shouldCancel(event.getEntity().getWorld(), WorldFlags.HOSTILE_SPAWN)) {
+        if (module.shouldCancel(event.getEntity().getWorld(), WorldFlags.HOSTILE_SPAWN) && hostile.contains(event.getEntityType())) {
             event.setCancelled(hostile.contains(event.getEntityType()));
         }
     }
