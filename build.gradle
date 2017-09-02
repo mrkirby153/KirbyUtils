@@ -1,10 +1,15 @@
 buildscript {
     repositories {
         jcenter()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
     }
 
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:0.9.15'
+        classpath 'net.researchgate:gradle-release:2.4.0'
     }
 }
 
@@ -13,6 +18,8 @@ subprojects {
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
     apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'org.jetbrains.dokka'
+    apply plugin: 'net.researchgate.release'
 
     group = 'me.mrkirby153'
     version = '1.2-SNAPSHOT'
@@ -57,4 +64,9 @@ subprojects {
     }
 
     build.dependsOn shadowJar
+
+    dokka {
+        outputFormat = 'javadoc'
+        outputDirectory = "$buildDir/javadoc"
+    }
 }

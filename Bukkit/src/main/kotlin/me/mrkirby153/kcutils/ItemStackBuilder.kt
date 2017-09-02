@@ -26,7 +26,7 @@ class ItemStackBuilder(material: Material, data: Int = 0) {
             itemFactory.unbreakable()
 
         if(!this.name.isNullOrEmpty())
-            itemFactory.name(this.name)
+            itemFactory.name(this.name!!)
 
         lore.forEach { itemFactory.lore(it) }
         flags.forEach { itemFactory.flags(it) }
