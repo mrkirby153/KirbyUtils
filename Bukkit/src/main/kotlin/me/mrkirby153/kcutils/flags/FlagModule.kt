@@ -1,8 +1,8 @@
 package me.mrkirby153.kcutils.flags
 
-import me.mrkirby153.kcutils.command.CommandManager
 import me.mrkirby153.kcutils.Chat
 import me.mrkirby153.kcutils.Module
+import me.mrkirby153.kcutils.command.CommandManager
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Sound
 import org.bukkit.SoundCategory
@@ -59,7 +59,7 @@ class FlagModule(plugin: JavaPlugin) : Module<JavaPlugin>("WorldFlags", plugin) 
     override fun init() {
         registerListener(FlagListener(this))
         if (CommandManager.instance() != null)
-            CommandManager.instance().registerCommand(FlagCommand(plugin, this))
+            CommandManager.instance()?.registerCommand(FlagCommand(plugin, this))
         else
             log("[WARN] Command manager not initialized! " + FlagCommand::class.java + " needs to be registered manually!")
     }
