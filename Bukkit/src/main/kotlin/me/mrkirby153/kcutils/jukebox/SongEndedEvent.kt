@@ -13,6 +13,6 @@ class SongEndedEvent(val song: NoteBlockSong) : Event() {
     }
 
     companion object {
-        val handlerList = HandlerList()
+       @JvmStatic val handlerList = HandlerList()
     }
 }

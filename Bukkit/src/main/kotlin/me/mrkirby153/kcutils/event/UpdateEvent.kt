@@ -10,6 +10,6 @@ class UpdateEvent(val type: UpdateType) : Event() {
     }
 
     companion object {
-        val handlerList = HandlerList()
+       @JvmStatic val handlerList = HandlerList()
     }
 }

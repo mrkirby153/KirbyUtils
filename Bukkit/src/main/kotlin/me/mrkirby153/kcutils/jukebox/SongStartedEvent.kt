@@ -25,6 +25,6 @@ class SongStartedEvent(
 
     companion object {
 
-        val handlerList = HandlerList()
+        @JvmStatic val handlerList = HandlerList()
     }
 }
