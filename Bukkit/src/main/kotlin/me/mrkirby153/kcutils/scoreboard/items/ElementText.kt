@@ -17,9 +17,5 @@ class ElementText(text: String) : ScoreboardElement {
     }
 
     override val lines: Array<String>
-        get() {
-            val text = arrayOf<String>()
-            text[0] = this.text.substring(0, Math.min(this.text.length, 40))
-            return text
-        }
+        get() = arrayOf(this.text.substring(0, Math.min(this.text.length, 40)))
 }

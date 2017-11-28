@@ -77,7 +77,7 @@ open class KirbyScoreboard(displayName: String) {
                 while (true) {
                     var matched = false
                     for (otherLines in newLines) {
-                        if (line == otherLines) {
+                        if (l == otherLines) {
                             l += ChatColor.RESET
                             matched = true
                         }
