@@ -39,12 +39,21 @@ subprojects {
         configurations = [project.configurations.shadow]
     }
 
+    task sourceJar(type: Jar, dependsOn: project.classes) {
+        classifier 'sources'
+        from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar, dependsOn: project.dokka){
+        from dokka
+    }
+
     publishing {
         tasks.publish.dependsOn build
         repositories{
             maven {
                 name = "mrkirby153"
-                url = "https://repo.mrkirby153.tk/nexus/content/repositories/snapshots/"
+                url = "https://repo.mrkirby153.com/repository/maven-snapshots/"
                 credentials {
                     username project.repositoryUsername
                     password project.repositoryPassword
@@ -54,6 +63,12 @@ subprojects {
         publications {
             jar(MavenPublication){
                 from components.shadow
+                artifact tasks.sourceJar {
+                    classifier = 'sources'
+                }
+                artifact tasks.javadocJar {
+                    classifier = 'javadoc'
+                }
             }
         }
     }
