@@ -38,7 +38,7 @@ abstract class Module<out T : JavaPlugin>(private val name: String, protected va
             throw IllegalStateException("Attempting to unload an already unloaded module!")
         val unloadTime = timeMS {
             try {
-                init()
+                disable()
             } catch (e: Exception) {
                 log("[ERROR] Caught exception while unloading. (${e.message})")
                 e.printStackTrace()
