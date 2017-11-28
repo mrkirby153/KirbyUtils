@@ -133,7 +133,7 @@ open class KirbyScoreboard(displayName: String) {
      *
      * @return The teams registered on the scoreboard
      */
-    fun getTeams(): Set<ScoreboardTeam> {
+    open fun getTeams(): Set<ScoreboardTeam> {
         return teams
     }
 

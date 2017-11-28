@@ -4,7 +4,7 @@ import net.md_5.bungee.api.ChatColor
 import org.bukkit.entity.Player
 import java.util.*
 
-class ScoreboardTeam(val teamName: String, val color: ChatColor) {
+open class ScoreboardTeam(val teamName: String, val color: ChatColor) {
 
     val players = mutableSetOf<UUID>()
     val prefixColor = color
@@ -35,11 +35,11 @@ class ScoreboardTeam(val teamName: String, val color: ChatColor) {
         return result
     }
 
-    fun removePlayer(player: Player) {
+    open fun removePlayer(player: Player) {
         players.remove(player.uniqueId)
     }
 
-    fun addPlayer(player: Player) {
+    open fun addPlayer(player: Player) {
         players.add(player.uniqueId)
     }
 
