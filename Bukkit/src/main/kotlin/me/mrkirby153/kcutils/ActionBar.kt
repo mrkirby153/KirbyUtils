@@ -63,6 +63,7 @@ class ActionBar(plugin: JavaPlugin) : Module<JavaPlugin>("actionbar", plugin), L
     }
 
     override fun init() {
+        protocolLib.init()
         registerListener(this)
         scheduleRepeating(0L, 5L, this)
     }
