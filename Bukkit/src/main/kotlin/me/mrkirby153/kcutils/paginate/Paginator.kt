@@ -3,8 +3,8 @@ package me.mrkirby153.kcutils.paginate
 /**
  * A paginator utility. Used to break a large list into multiple sub-lists
  *
- * @param <T>
-</T> */
+ * @param T The type of the paginator
+ */
 class Paginator<T>(private val items: List<T>, private val itemsPerPage: Int) {
 
     /**

@@ -11,6 +11,11 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 
+/**
+ * A module for handling the player's [ActionBar]
+ *
+ * @param plugin    The plugin that this module is a member of
+ */
 class ActionBar(plugin: JavaPlugin) : Module<JavaPlugin>("actionbar", plugin), Listener, Runnable {
 
     private val protocolLib: ProtocolLib = ProtocolLib(plugin)

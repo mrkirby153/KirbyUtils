@@ -12,17 +12,35 @@ import org.bukkit.Location
 import java.io.File
 import java.io.IOException
 
+/**
+ * A class for handling structure classes
+ */
 class Structure(private val schematicFile: File) {
 
+    /**
+     * If the schematic is placed in the world
+     */
     var isPlaced = false
         private set
+
+    /**
+     * The location that the schematic is placed
+     */
     var placedAt: Location? = null
         private set
 
+    /**
+     * A worldedit instance
+     */
     private val worldEdit: WorldEditPlugin? = Bukkit.getPluginManager().getPlugin("WorldEdit") as? WorldEditPlugin
 
     private var wePresent = worldEdit != null
 
+    /**
+     * Place the structure
+     *
+     * @param block The location to place the structure at
+     */
     fun place(block: Location) {
         if (!wePresent)
             throw IllegalStateException("WorldEdit is required to load structures!")
@@ -43,6 +61,9 @@ class Structure(private val schematicFile: File) {
         this.isPlaced = true
     }
 
+    /**
+     * Resets the structure
+     */
     fun reset() {
         this.placedAt = null
         this.isPlaced = false

@@ -4,10 +4,24 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 
+/**
+ * A class for creating "sub-plugins" in one main plugin
+ *
+ * Modules are used to logically separate parts of plugins from one another.
+ *
+ * @param name      The name of the plugin
+ * @param plugin    The owning [JavaPlugin]
+ */
 abstract class Module<out T : JavaPlugin>(private val name: String, protected val plugin: T) {
 
+    /**
+     * If the module has been loaded
+     */
     var loaded: Boolean = false
 
+    /**
+     * The configuration file of the main plugin
+     */
     val config: FileConfiguration
         get() = plugin.config
 
@@ -49,10 +63,16 @@ abstract class Module<out T : JavaPlugin>(private val name: String, protected va
         log("Loaded in ${if (unloadTime < 1) "< 1 millisecond" else Time.format(1, unloadTime, Time.TimeUnit.FIT)}")
     }
 
+    /**
+     * Called when the module is loaded
+     */
     open fun init() {
 
     }
 
+    /**
+     * Called when the module is unloaded
+     */
     open fun disable() {
 
     }

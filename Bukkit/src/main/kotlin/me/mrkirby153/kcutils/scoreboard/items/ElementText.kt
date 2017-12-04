@@ -2,8 +2,14 @@ package me.mrkirby153.kcutils.scoreboard.items
 
 import me.mrkirby153.kcutils.scoreboard.ScoreboardElement
 
+/**
+ * A scoreboard element consisting of one line of text
+ */
 class ElementText(text: String) : ScoreboardElement {
 
+    /**
+     * The text
+     */
     private val text: String
 
     init {

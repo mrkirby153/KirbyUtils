@@ -9,6 +9,9 @@ import java.io.IOException
 import java.nio.file.Files
 import java.util.*
 
+/**
+ * A collection of [NoteBlocks][NoteBlock] forming a song
+ */
 class NoteBlockSong(private val location: File) {
     private var isDestroyed = false
     private val notes = HashMap<Int, ArrayList<NoteBlock>>()

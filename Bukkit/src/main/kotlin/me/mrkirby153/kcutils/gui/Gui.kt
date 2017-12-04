@@ -22,15 +22,32 @@ import kotlin.collections.ArrayList
  * An abstract class of a gui
  *
  * @param <T> A JavaPlugin
-</T> */
+*/
 abstract class Gui<T : JavaPlugin>(protected var plugin: T, rows: Int, title: String) : Listener {
 
+    /**
+     * The map of slots to their actions
+     */
     private var actions: MutableMap<Int, BiConsumer<Player, ClickType>> = HashMap()
+
+    /**
+     * The inventory
+     */
     protected val inventory: Inventory = Bukkit.createInventory(null, rows * 9)
 
+    /**
+     * If the listener has been registered
+     */
     var listenerRegistered = false
 
+    /**
+     * Events fired when the inventory is opened for a player
+     */
     private val onOpenEvents = ArrayList<Consumer<Player>>()
+
+    /**
+     * Events fired when the inventory is closed for a player
+     */
     private val onCloseEvents = ArrayList<Consumer<Player>>()
 
     /**
@@ -50,6 +67,9 @@ abstract class Gui<T : JavaPlugin>(protected var plugin: T, rows: Int, title: St
         inventory.setItem(slot, item)
     }
 
+    /**
+     * Constructs the inventory for displaying
+     */
     abstract fun build()
 
     /**
@@ -78,6 +98,11 @@ abstract class Gui<T : JavaPlugin>(protected var plugin: T, rows: Int, title: St
 
     }
 
+    /**
+     * Registers a close event consumer
+     *
+     * @param consumer The consumer to register
+     */
     fun onClose(consumer: Consumer<Player>) {
         this.onCloseEvents.add(consumer)
     }

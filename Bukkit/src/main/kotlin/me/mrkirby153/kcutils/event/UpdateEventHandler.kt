@@ -3,6 +3,11 @@ package me.mrkirby153.kcutils.event
 import me.mrkirby153.kcutils.Module
 import org.bukkit.plugin.java.JavaPlugin
 
+/**
+ * A module handling the firing of [UpdateEvents][UpdateEvent]
+ *
+ * @param plugin The owning plugin
+ */
 class UpdateEventHandler(plugin: JavaPlugin) : Module<JavaPlugin>("Update Event", plugin), Runnable {
 
     private var ticks = 0

@@ -11,6 +11,8 @@ import java.util.*
 
 /**
  * Wrapper class for quickly creating scoreboards
+ *
+ * @param displayName The name of a scoreboard
  */
 open class KirbyScoreboard(displayName: String) {
 
@@ -23,7 +25,15 @@ open class KirbyScoreboard(displayName: String) {
     val board: Scoreboard = Bukkit.getScoreboardManager().newScoreboard
     private val sideObjective = addObjective(displayName, DisplaySlot.SIDEBAR)
     private val scoreboardElements = ArrayList<ScoreboardElement>()
+
+    /**
+     * A list of teams currently registered on the scoreboard
+     */
     private val teams = HashSet<ScoreboardTeam>()
+
+    /**
+     * The current list of lines in the scoreboard
+     */
     private val current = arrayOfNulls<String>(15)
 
     private var debug = false

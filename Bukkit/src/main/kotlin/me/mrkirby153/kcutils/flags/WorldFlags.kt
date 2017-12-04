@@ -1,5 +1,8 @@
 package me.mrkirby153.kcutils.flags
 
+/**
+ * A list of all flags that can be set on the world
+ */
 enum class WorldFlags(private val defaultEnabled: Boolean, val friendlyName: String) {
 
     // PvP - Player vs Player Damage

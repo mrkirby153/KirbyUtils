@@ -12,6 +12,14 @@ import org.bukkit.entity.Player
 fun Player.sendMessage(component: BaseComponent) = this.spigot().sendMessage(component)
 
 
+/**
+ * Creates a [TextComponentBuilder]
+ *
+ * @param text  The Text
+ * @param color The color of the text
+ *
+ * @return A [TextComponentBuilder]
+ */
 @JvmOverloads
 fun component(text: String? = null, color: ChatColor = ChatColor.WHITE): TextComponentBuilder = TextComponentBuilder().apply {
     if (text != null)
@@ -19,25 +27,69 @@ fun component(text: String? = null, color: ChatColor = ChatColor.WHITE): TextCom
     this.color = color
 }
 
+/**
+ * Creates a [TextComponentBuilder]
+ *
+ * @param   text The text
+ * @param   value The builder to apply
+ *
+ * @return A [TextComponentBuilder]
+ */
 inline fun component(text: String? = null, value: TextComponentBuilder.() -> Unit): TextComponentBuilder {
     return component(text).apply(value)
 }
 
+/**
+ * Creates a [TextComponentBuilder]
+ *
+ * @param   text The text
+ * @param   color The color of the text
+ * @param   value The builder to apply
+ *
+ * @return A [TextComponentBuilder]
+ */
 inline fun component(text: String? = null, color: ChatColor, value: TextComponentBuilder.() -> Unit): TextComponentBuilder {
     return component(text, color).apply(value)
 }
 
+/**
+ * Creates a new [ItemStackBuilder]
+ *
+ * @param material  The material of the item
+ * @param data      The data/damage value of the item
+ *
+ * @return An [ItemStackBuilder]
+ */
 fun itemStack(material: Material, data: Int = 0): ItemStackBuilder = ItemStackBuilder(material, data)
 
+/**
+ * Creates a new [ItemStackBuilder]
+ *
+ * @param material  The material of the item
+ * @param value     The builder to apply
+ *
+ * @return An [ItemStackBuilder]
+ */
 inline fun itemStack(material: Material, value: ItemStackBuilder.() -> Unit): ItemStackBuilder {
     return itemStack(material).apply(value)
 }
 
+/**
+ * Creates an new [ItemStackBuilder]
+ *
+ * @param material  The material of the item
+ * @param data      The data of the item
+ * @param value     The builder to apply
+ *
+ * @return An [ItemStackBuilder]
+ */
 inline fun itemStack(material: Material, data: Int, value: ItemStackBuilder.() -> Unit): ItemStackBuilder = itemStack(material, data).apply(value)
 
 /**
  * Checks if a block is safe for players to teleport to
  * Criteria: Not a liquid or not below a liquid; This and the block above are air
+ *
+ * @return True if the block is safe for a user to teleport to
  */
 fun Block.safeToTeleport(): Boolean {
     // If this block is a liquid

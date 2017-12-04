@@ -1,12 +1,15 @@
 package me.mrkirby153.kcutils.flags
 
-import me.mrkirby153.kcutils.command.BaseCommand
 import me.mrkirby153.kcutils.Chat
+import me.mrkirby153.kcutils.command.BaseCommand
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 
+/**
+ * A command for setting world flags
+ */
 class FlagCommand(instance: JavaPlugin, private val module: FlagModule) : BaseCommand<JavaPlugin>(instance, "ku-flags", "kirbyutils.command.flag", arrayOf()) {
 
     override fun execute(player: Player, args: Array<String>) {

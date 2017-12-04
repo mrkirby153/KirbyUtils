@@ -128,6 +128,9 @@ class ItemFactory(private val material: Material) {
         return this
     }
 
+    /**
+     * An enchantment for making an item glow
+     */
     class GlowEnchantment : EnchantmentWrapper(120) {
         init {
             register()
@@ -179,6 +182,10 @@ class ItemFactory(private val material: Material) {
     }
 
     companion object {
+
+        /**
+         * The glowing enchantment -- An enchantment with no effects whose sole purpose is to make the item glow
+         */
         val ENCHANTMENT_GLOWING: Enchantment = GlowEnchantment()
     }
 }

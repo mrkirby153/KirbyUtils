@@ -13,8 +13,9 @@ import java.util.*
  */
 class CommandManager private constructor(plugin: JavaPlugin) : Listener {
 
-    private val registeredCommands = ArrayList<BaseCommand<*>>()
-
+    /**
+     * A list of registered commands
+     */
     private val commands = HashMap<String, BaseCommand<out JavaPlugin>>()
 
 

@@ -10,20 +10,36 @@ import java.util.*
 
 /**
  * A collection of noteblock songs as a jukebox
+ *
+ * @param plugin    The owning plugin
+ * @param players   A list of players listening to the jukebox
  */
 class Jukebox(plugin: JavaPlugin, vararg players: Player) : Listener {
 
+    /**
+     * A list of players currently listening to the Jukebox
+     */
     private val listeningPlayers = ArrayList<UUID>()
 
+    /**
+     * A list of files in the queue for the noteblocks
+     */
     private val queue = LinkedList<File>()
 
+    /**
+     * The current song playing
+     */
     private var nowPlaying: NoteBlockSong? = null
 
+    /**
+     * If the queue should repeat
+     */
     private var repeat = false
 
+    /**
+     * The current position in the queue
+     */
     private var queuePos = -1
-
-    private val ended = false
 
     init {
         players.mapTo(listeningPlayers) { it.uniqueId }
