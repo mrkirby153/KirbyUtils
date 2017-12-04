@@ -3,7 +3,8 @@ package me.mrkirby153.kcutils
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 /**
  * Handle conversions from human-readable times and computer readbale times
@@ -62,7 +63,7 @@ object Time {
      * @return A string in human-readable format
      */
     @JvmOverloads
-    fun format(trim: Int, time: Long, type: TimeUnit = TimeUnit.FIT, lowest: TimeUnit = TimeUnit.DAYS): String {
+    fun format(trim: Int, time: Long, type: TimeUnit = TimeUnit.FIT, lowest: TimeUnit = TimeUnit.MILLISECONDS): String {
         var type = type
         if (time == -1L) return "Permanent"
 
@@ -77,7 +78,8 @@ object Time {
                 type = TimeUnit.HOURS
             else
                 type = TimeUnit.DAYS
-            if(type.ordinal < lowest.ordinal){
+
+            if(type.ordinal > lowest.ordinal){
                 type = lowest
             }
         }
