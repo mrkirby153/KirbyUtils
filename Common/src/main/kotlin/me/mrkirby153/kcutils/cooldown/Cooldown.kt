@@ -5,10 +5,16 @@ package me.mrkirby153.kcutils.cooldown
  *
  * @param T                     The type of cooldown
  * @property defaultDuration    The default cooldown duration
+ * @property name               The name of the cooldown
+ * @property notify             If the user should be notified when the cooldown expires
  */
-class Cooldown<in T>(private val defaultDuration: Long) {
+class Cooldown<T>(private val defaultDuration: Long, val name: String, var notify: Boolean = false) {
+
+    constructor(defaultDuration: Long, name: String) : this(defaultDuration, name, false)
 
     private val map = mutableMapOf<T, CooldownEntry>()
+
+    private val pendingNotify = mutableSetOf<T>()
 
     /**
      * Checks if the cooldown has expired
@@ -23,6 +29,8 @@ class Cooldown<in T>(private val defaultDuration: Long) {
      */
     @JvmOverloads
     fun use(k: T, duration: Long = defaultDuration) {
+        if(notify)
+            pendingNotify.add(k)
         map[k] = CooldownEntry(System.currentTimeMillis() + duration, duration)
     }
 
@@ -46,6 +54,22 @@ class Cooldown<in T>(private val defaultDuration: Long) {
         val entry = map[k] ?: return 1.0
         val elapsedTime = entry.expiresOn - System.currentTimeMillis()
         return elapsedTime / entry.duration.toDouble()
+    }
+
+    /**
+     * Gets the elements pending notification on coodown complete
+     *
+     * @return A HashSet of objects pending notification
+     */
+    fun getPendingNotifcations() = this.pendingNotify.toHashSet()
+
+    /**
+     * Removes the pending notification for an object
+     *
+     * @param k The object to remove
+     */
+    fun removeNotifcation(k: T){
+        this.pendingNotify.remove(k)
     }
 }
 
