@@ -58,9 +58,11 @@ object Time {
      * @param trim The amount of decimal places
      * @param time The time
      * @param type The time unit to display in
+     * @param lowest The smallest time unit to display
      * @return A string in human-readable format
      */
-    fun format(trim: Int, time: Long, type: TimeUnit): String {
+    @JvmOverloads
+    fun format(trim: Int, time: Long, type: TimeUnit = TimeUnit.FIT, lowest: TimeUnit = TimeUnit.DAYS): String {
         var type = type
         if (time == -1L) return "Permanent"
 
@@ -75,6 +77,9 @@ object Time {
                 type = TimeUnit.HOURS
             else
                 type = TimeUnit.DAYS
+            if(type.ordinal < lowest.ordinal){
+                type = lowest
+            }
         }
 
         val text: String
