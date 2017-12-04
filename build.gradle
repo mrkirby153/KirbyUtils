@@ -34,7 +34,7 @@ subprojects {
         compile.extendsFrom shadow
     }
 
-    shadowJar{
+    shadowJar {
         classifier = null
         configurations = [project.configurations.shadow]
     }
@@ -44,24 +44,24 @@ subprojects {
         from sourceSets.main.allSource
     }
 
-    task javadocJar(type: Jar, dependsOn: project.dokka){
+    task javadocJar(type: Jar, dependsOn: project.dokka) {
         from dokka
     }
 
     publishing {
         tasks.publish.dependsOn build
-        repositories{
+        repositories {
             maven {
                 name = "mrkirby153"
                 url = "https://repo.mrkirby153.com/repository/maven-snapshots/"
                 credentials {
-                    username project.repositoryUsername
-                    password project.repositoryPassword
+                    username project.hasProperty('repositoryUsername') ? project.repositoryUsername : System.getenv("REPO_USERNAME")
+                    password project.hasProperty('repositoryPassword') ? project.repositoryPassword : System.getenv("REPO_PASS")
                 }
             }
         }
         publications {
-            jar(MavenPublication){
+            jar(MavenPublication) {
                 from components.shadow
                 artifact tasks.sourceJar {
                     classifier = 'sources'
