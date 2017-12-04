@@ -80,3 +80,14 @@ subprojects {
         outputDirectory = "$buildDir/javadoc"
     }
 }
+
+apply plugin: 'org.jetbrains.dokka'
+
+dokka {
+    outputFormat = 'javadoc'
+    outputDirectory = "$buildDir/javadoc"
+
+    kotlinTasks {
+        defaultKotlinTasks() + [project(":KirbyUtils-Common").compileKotlin, project(":KirbyUtils-Bukkit").compileKotlin]
+    }
+}
