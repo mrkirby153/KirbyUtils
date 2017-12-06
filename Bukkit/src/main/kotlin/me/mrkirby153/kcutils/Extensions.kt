@@ -4,6 +4,8 @@ import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.Material
 import org.bukkit.block.Block
+import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 
 /**
@@ -21,7 +23,8 @@ fun Player.sendMessage(component: BaseComponent) = this.spigot().sendMessage(com
  * @return A [TextComponentBuilder]
  */
 @JvmOverloads
-fun component(text: String? = null, color: ChatColor = ChatColor.WHITE): TextComponentBuilder = TextComponentBuilder().apply {
+fun component(text: String? = null,
+              color: ChatColor = ChatColor.WHITE): TextComponentBuilder = TextComponentBuilder().apply {
     if (text != null)
         this.text = text
     this.color = color
@@ -35,7 +38,8 @@ fun component(text: String? = null, color: ChatColor = ChatColor.WHITE): TextCom
  *
  * @return A [TextComponentBuilder]
  */
-inline fun component(text: String? = null, value: TextComponentBuilder.() -> Unit): TextComponentBuilder {
+inline fun component(text: String? = null,
+                     value: TextComponentBuilder.() -> Unit): TextComponentBuilder {
     return component(text).apply(value)
 }
 
@@ -48,7 +52,8 @@ inline fun component(text: String? = null, value: TextComponentBuilder.() -> Uni
  *
  * @return A [TextComponentBuilder]
  */
-inline fun component(text: String? = null, color: ChatColor, value: TextComponentBuilder.() -> Unit): TextComponentBuilder {
+inline fun component(text: String? = null, color: ChatColor,
+                     value: TextComponentBuilder.() -> Unit): TextComponentBuilder {
     return component(text, color).apply(value)
 }
 
@@ -60,7 +65,8 @@ inline fun component(text: String? = null, color: ChatColor, value: TextComponen
  *
  * @return An [ItemStackBuilder]
  */
-fun itemStack(material: Material, data: Int = 0): ItemStackBuilder = ItemStackBuilder(material, data)
+fun itemStack(material: Material, data: Int = 0): ItemStackBuilder = ItemStackBuilder(material,
+        data)
 
 /**
  * Creates a new [ItemStackBuilder]
@@ -83,7 +89,9 @@ inline fun itemStack(material: Material, value: ItemStackBuilder.() -> Unit): It
  *
  * @return An [ItemStackBuilder]
  */
-inline fun itemStack(material: Material, data: Int, value: ItemStackBuilder.() -> Unit): ItemStackBuilder = itemStack(material, data).apply(value)
+inline fun itemStack(material: Material, data: Int,
+                     value: ItemStackBuilder.() -> Unit): ItemStackBuilder = itemStack(material,
+        data).apply(value)
 
 /**
  * Checks if a block is safe for players to teleport to
@@ -95,7 +103,29 @@ fun Block.safeToTeleport(): Boolean {
     // If this block is a liquid
     if (this.isLiquid || this.getRelative(org.bukkit.block.BlockFace.DOWN).isLiquid)
         return false
-    if (this.type != Material.AIR || this.getRelative(org.bukkit.block.BlockFace.UP) != Material.AIR)
+    if (this.type != Material.AIR || this.getRelative(
+            org.bukkit.block.BlockFace.UP) != Material.AIR)
         return false
     return true
+}
+
+/**
+ * Gets or creates the given configuration section
+ *
+ * @param section   The section to get
+ *
+ * @return The section
+ */
+fun YamlConfiguration.getOrCreateSection(section: String): ConfigurationSection {
+    return this.getConfigurationSection(section) ?: this.createSection(section)
+}
+/**
+ * Gets or creates the given configuration section
+ *
+ * @param section   The section to get
+ *
+ * @return The section
+ */
+fun ConfigurationSection.getOrCreateSection(section: String): ConfigurationSection {
+    return this.getConfigurationSection(section) ?: this.createSection(section)
 }

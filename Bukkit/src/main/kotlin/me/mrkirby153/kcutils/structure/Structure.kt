@@ -1,71 +1,157 @@
 package me.mrkirby153.kcutils.structure
 
-import com.sk89q.worldedit.MaxChangedBlocksException
-import com.sk89q.worldedit.Vector
-import com.sk89q.worldedit.bukkit.BukkitWorld
-import com.sk89q.worldedit.bukkit.WorldEditPlugin
-import com.sk89q.worldedit.data.DataException
-import com.sk89q.worldedit.schematic.MCEditSchematicFormat
-import com.sk89q.worldedit.world.World
-import org.bukkit.Bukkit
+import me.mrkirby153.kcutils.getOrCreateSection
+import me.mrkirby153.kcutils.structure.adapter.data.MaterialDataAdapter
+import me.mrkirby153.kcutils.structure.adapter.state.BlockStateAdapter
 import org.bukkit.Location
-import java.io.File
-import java.io.IOException
+import org.bukkit.Material
+import org.bukkit.block.BlockState
+import org.bukkit.configuration.file.YamlConfiguration
 
 /**
- * A class for handling structure classes
+ * A structure is a collection of blocks which can be placed anywhere
+ *
+ * @property yaml   The structure's data
  */
-class Structure(private val schematicFile: File) {
+class Structure(private val yaml: YamlConfiguration) {
 
     /**
-     * If the schematic is placed in the world
+     * The size of the structure in the X direction from the origin
      */
-    var isPlaced = false
-        private set
+    val sizeX: Int
+        get() = yaml.getInt("dimensions.x")
 
     /**
-     * The location that the schematic is placed
+     * The size of the structure in the Y direction from the origin
      */
-    var placedAt: Location? = null
-        private set
+    val sizeY: Int
+        get() = yaml.getInt("dimensions.y")
 
     /**
-     * A worldedit instance
+     * The size of the structure in the Z direction from the origin
      */
-    private val worldEdit: WorldEditPlugin? = Bukkit.getPluginManager().getPlugin("WorldEdit") as? WorldEditPlugin
-
-    private var wePresent = worldEdit != null
+    val sizeZ: Int
+        get() = yaml.getInt("dimensions.z")
 
     /**
-     * Place the structure
+     * If the structure is placed
+     */
+    var placed = false
+
+    /**
+     * A list of blocks that make up the blocks that were replaced by the structure
+     */
+    private var originalBlocks = mutableListOf<BlockState>()
+
+    /**
+     * Place down the structure in the world
      *
-     * @param block The location to place the structure at
+     * @param origin    The location where the origin of the structure is placed
      */
-    fun place(block: Location) {
-        if (!wePresent)
-            throw IllegalStateException("WorldEdit is required to load structures!")
-        val session = worldEdit!!.worldEdit.editSessionFactory.getEditSession(BukkitWorld(block.world) as World, Integer.MAX_VALUE)
-        try {
-            val clipboard = MCEditSchematicFormat.getFormat(schematicFile).load(schematicFile)
-            val origin = Vector(block.blockX, block.blockY, block.blockZ)
-            clipboard.paste(session, origin, false)
-        } catch (e: MaxChangedBlocksException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: DataException) {
-            e.printStackTrace()
-        }
+    fun place(origin: Location) {
+        if (placed)
+            return
+        // Get all the blocks
+        val blockCount = yaml["blocks.count"] as Int
+        for (i in 1..blockCount) {
+            val section = yaml.getOrCreateSection("blocks.$i")
 
-        this.placedAt = block.clone()
-        this.isPlaced = true
+            val material = section.getString("material")
+
+            val block = RelativeBlock(section.getInt("x"), section.getInt("y"), section.getInt("z"),
+                    if (material != null) Material.valueOf(material) else null,
+                    section.getInt("data").toByte())
+
+            this.originalBlocks.add(block.getLocation(origin).block.state)
+
+            block.place(origin, section.getConfigurationSection("state"))
+        }
+        placed = true
     }
 
     /**
-     * Resets the structure
+     * Restores the surrounding area to its original state
      */
-    fun reset() {
-        this.placedAt = null
-        this.isPlaced = false
+    fun restore() {
+        if (!placed)
+            return
+        this.originalBlocks.forEach { state ->
+            state.update(true, false)
+        }
+        placed = false
+    }
+
+    companion object {
+
+        /**
+         * Creates a structure
+         *
+         * @param origin    The origin of the structure (the base point)
+         * @param pt1       The 1st point in the region encasing the structure
+         * @param pt2       The 2nd point in the region encasing the structure
+         * @param ignored   A list of ignored materials
+         *
+         * @return A configuration file of the structure
+         */
+        @JvmOverloads
+        fun makeStructure(origin: Location, pt1: Location, pt2: Location, ignored: Array<Material> = arrayOf()): YamlConfiguration {
+            val minX = Math.min(pt1.blockX, pt2.blockX)
+            val minY = Math.min(pt1.blockY, pt1.blockY)
+            val minZ = Math.min(pt1.blockZ, pt2.blockZ)
+
+            val maxX = Math.max(pt1.blockX, pt2.blockX)
+            val maxY = Math.max(pt1.blockY, pt2.blockY)
+            val maxZ = Math.max(pt1.blockZ, pt2.blockZ)
+
+            val yamlConfig = YamlConfiguration()
+
+            val sizeX = maxX - minX + 1
+            val sizeY = maxY - minY + 1
+            val sizeZ = maxZ - minZ + 1
+
+            var i = 1
+
+            yamlConfig.getOrCreateSection("dimensions").apply {
+                set("x", sizeX)
+                set("y", sizeY)
+                set("z", sizeZ)
+            }
+
+            for (x in minX..maxX) {
+                for (y in minY..maxY) {
+                    for (z in minZ..maxZ) {
+                        val relX = x - origin.blockX
+                        val relY = y - origin.blockY
+                        val relZ = z - origin.blockZ
+
+                        val loc = Location(origin.world, x.toDouble(), y.toDouble(), z.toDouble())
+                        if(loc.block.type in ignored)
+                            continue
+
+                        yamlConfig.getOrCreateSection("blocks.${i++}").apply {
+                            set("x", relX)
+                            set("y", relY)
+                            set("z", relZ)
+
+                            val adapter = BlockStateAdapter.getAdapter(loc.block.state)
+                            val dataAdapter = MaterialDataAdapter.getAdapter(loc.block.state.data)
+                            set("material", loc.block.type.toString())
+                            set("data", loc.block.data)
+
+                            val stateSec = getOrCreateSection("state")
+                            adapter?.serializeState(
+                                    loc.block.state, stateSec)
+                            dataAdapter?.serializeData(loc.block.state.data, stateSec)
+
+
+                        }
+                    }
+                }
+            }
+
+            yamlConfig.set("blocks.count", i - 1)
+
+            return yamlConfig
+        }
     }
 }
