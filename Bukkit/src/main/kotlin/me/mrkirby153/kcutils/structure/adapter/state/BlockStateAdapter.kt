@@ -1,7 +1,8 @@
 package me.mrkirby153.kcutils.structure.adapter.state
 
-import org.bukkit.Material
 import org.bukkit.block.BlockState
+import org.bukkit.block.Chest
+import org.bukkit.block.Sign
 
 /**
  * A mapper for mapping block states to their corresponding adapter
@@ -9,14 +10,12 @@ import org.bukkit.block.BlockState
 object BlockStateAdapter {
 
 
-    val adapters = mutableMapOf<Material, BlockAdapter<*>>()
+    val adapters = mutableMapOf<Class<out BlockState>, BlockAdapter<*>>()
 
 
     init {
-        adapters.put(Material.SIGN, SignAdapter())
-        adapters.put(Material.SIGN_POST, SignAdapter())
-        adapters.put(Material.WALL_SIGN, SignAdapter())
-        adapters.put(Material.CHEST, ChestAdapter())
+        adapters.put(Sign::class.java, SignAdapter())
+        adapters.put(Chest::class.java, ChestAdapter())
     }
 
     /**
@@ -26,14 +25,12 @@ object BlockStateAdapter {
      *
      * @return The adapter, or null if it doesn't exist
      */
-    fun getAdapter(state: BlockState) = adapters[state.type]
-
-    /**
-     * Gets an adapter by its [Material]
-     *
-     * @param material The material of the block
-     *
-     * @return The adapter, or null if it doesn't exist
-     */
-    fun getAdapter(material: Material) = adapters[material]
+    fun getAdapter(state: BlockState): BlockAdapter<*>? {
+        var foundAdapter: BlockAdapter<*>? = null
+        adapters.forEach { clazz, adapter ->
+            if (clazz.isAssignableFrom(state.javaClass))
+                foundAdapter = adapter
+        }
+        return foundAdapter
+    }
 }

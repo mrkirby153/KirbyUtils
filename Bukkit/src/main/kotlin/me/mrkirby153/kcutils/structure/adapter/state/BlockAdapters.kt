@@ -6,6 +6,9 @@ import org.bukkit.configuration.ConfigurationSection
 
 class SignAdapter : BlockAdapter<Sign>() {
 
+    override val placeOrder: Int
+        get() = 1
+
     override fun deserialize(state: Sign, config: ConfigurationSection) {
         for (i in state.lines.indices) {
             val toString = config["line.$i"].toString()
@@ -21,6 +24,8 @@ class SignAdapter : BlockAdapter<Sign>() {
 }
 
 class ChestAdapter : BlockAdapter<Chest>() {
+    override val placeOrder: Int
+        get() = 1
     override fun deserialize(state: Chest, config: ConfigurationSection) {
         for (i in 0 until state.blockInventory.size) {
             state.blockInventory.setItem(i, config.getItemStack("items.$i"))

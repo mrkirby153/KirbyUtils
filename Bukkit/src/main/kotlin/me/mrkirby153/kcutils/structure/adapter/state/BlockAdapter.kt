@@ -8,6 +8,11 @@ import org.bukkit.configuration.ConfigurationSection
  */
 abstract class BlockAdapter<in S : BlockState> {
 
+    /**
+     * The order when the blocks are going to be placed
+     */
+    open val placeOrder = 0
+
     abstract fun deserialize(state: S, config: ConfigurationSection)
 
     abstract fun serialize(state: S, config: ConfigurationSection)

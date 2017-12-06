@@ -3,17 +3,19 @@ package me.mrkirby153.kcutils.structure
 import me.mrkirby153.kcutils.getOrCreateSection
 import me.mrkirby153.kcutils.structure.adapter.data.MaterialDataAdapter
 import me.mrkirby153.kcutils.structure.adapter.state.BlockStateAdapter
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockState
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.plugin.java.JavaPlugin
 
 /**
  * A structure is a collection of blocks which can be placed anywhere
  *
  * @property yaml   The structure's data
  */
-class Structure(private val yaml: YamlConfiguration) {
+class Structure(private val yaml: YamlConfiguration) : Runnable {
 
     /**
      * The size of the structure in the X direction from the origin
@@ -43,30 +45,94 @@ class Structure(private val yaml: YamlConfiguration) {
      */
     private var originalBlocks = mutableListOf<BlockState>()
 
+    var placePhase = 0
+
+    var subPhase = 1
+    var maxPhase = 0
+    var taskId = 0
+    var origin: Location? = null
+
+    val blocks: Array<RelativeBlock> = loadBlocks()
+
     /**
-     * Place down the structure in the world
+     * Place down the structure in the world all at once
      *
      * @param origin    The location where the origin of the structure is placed
      */
-    fun place(origin: Location) {
+    fun placeAll(origin: Location) {
         if (placed)
             return
-        // Get all the blocks
-        val blockCount = yaml["blocks.count"] as Int
-        for (i in 1..blockCount) {
-            val section = yaml.getOrCreateSection("blocks.$i")
 
-            val material = section.getString("material")
-
-            val block = RelativeBlock(section.getInt("x"), section.getInt("y"), section.getInt("z"),
-                    if (material != null) Material.valueOf(material) else null,
-                    section.getInt("data").toByte())
-
-            this.originalBlocks.add(block.getLocation(origin).block.state)
-
-            block.place(origin, section.getConfigurationSection("state"))
+        this.blocks.forEach {
+            this.originalBlocks.add(it.getLocation(origin).block.state)
+            it.place(origin)
         }
         placed = true
+    }
+
+    /**
+     * Place down the structure in phases in attempt to prevent as many glitches as possible
+     *
+     * @param origin    The origin
+     * @param plugin    The plugin to schedule the task under
+     * @oaram period    The delay in ticks between phases
+     */
+    @JvmOverloads
+    fun place(origin: Location, plugin: JavaPlugin, period: Long = 2L) {
+        if (placed)
+            return
+        this.blocks.forEach { block ->
+            if (block.blockState != null) {
+                if (this.maxPhase < block.blockState.getInt("placeOrder")) {
+                    this.maxPhase = block.blockState.getInt("placeOrder")
+                }
+            }
+        }
+        println("Max phase ${this.maxPhase}")
+        this.origin = origin
+        taskId = plugin.server.scheduler.scheduleSyncRepeatingTask(plugin, this, 0L, period)
+    }
+
+    override fun run() {
+        if (origin == null || placePhase > maxPhase) {
+            Bukkit.getServer().scheduler.cancelTask(taskId)
+            if (origin != null)
+                placed = true
+        }
+        val blocks = this.blocks.filter {
+            (it.blockState?.getInt("placeOrder") ?: 0) == this.placePhase
+        }
+        blocks.forEach { block ->
+            this.originalBlocks.add(block.getLocation(origin!!).block.state)
+
+            block.place(origin!!, subPhase)
+        }
+        subPhase++
+        if (subPhase > 3) {
+            subPhase = 1
+            placePhase++
+        }
+    }
+
+    fun loadBlocks(): Array<RelativeBlock> {
+        val count = yaml["blocks.count"] as Int
+
+        val mutableList = mutableListOf<RelativeBlock>()
+
+        for (i in 1..count) {
+            val section = yaml.getConfigurationSection("blocks.$i") ?: continue
+
+            val material = section.getString("material").toUpperCase()
+            if (!Material.values().map { it.toString() }.contains(material))
+                continue
+
+            val block = RelativeBlock(section.getInt("x"), section.getInt("y"), section.getInt("z"),
+                    Material.valueOf(material), section.getInt("data").toByte(),
+                    section.getConfigurationSection("state"))
+
+            mutableList.add(block)
+        }
+        return mutableList.toTypedArray()
     }
 
     /**
@@ -94,7 +160,8 @@ class Structure(private val yaml: YamlConfiguration) {
          * @return A configuration file of the structure
          */
         @JvmOverloads
-        fun makeStructure(origin: Location, pt1: Location, pt2: Location, ignored: Array<Material> = arrayOf()): YamlConfiguration {
+        fun makeStructure(origin: Location, pt1: Location, pt2: Location,
+                          ignored: Array<Material> = arrayOf()): YamlConfiguration {
             val minX = Math.min(pt1.blockX, pt2.blockX)
             val minY = Math.min(pt1.blockY, pt1.blockY)
             val minZ = Math.min(pt1.blockZ, pt2.blockZ)
@@ -125,7 +192,7 @@ class Structure(private val yaml: YamlConfiguration) {
                         val relZ = z - origin.blockZ
 
                         val loc = Location(origin.world, x.toDouble(), y.toDouble(), z.toDouble())
-                        if(loc.block.type in ignored)
+                        if (loc.block.type in ignored)
                             continue
 
                         yamlConfig.getOrCreateSection("blocks.${i++}").apply {
@@ -135,12 +202,15 @@ class Structure(private val yaml: YamlConfiguration) {
 
                             val adapter = BlockStateAdapter.getAdapter(loc.block.state)
                             val dataAdapter = MaterialDataAdapter.getAdapter(loc.block.state.data)
+                            println("${loc.block.type} - ${loc.block.state}")
                             set("material", loc.block.type.toString())
                             set("data", loc.block.data)
 
                             val stateSec = getOrCreateSection("state")
                             adapter?.serializeState(
                                     loc.block.state, stateSec)
+                            if (adapter != null)
+                                stateSec.set("placeOrder", adapter.placeOrder)
                             dataAdapter?.serializeData(loc.block.state.data, stateSec)
 
 

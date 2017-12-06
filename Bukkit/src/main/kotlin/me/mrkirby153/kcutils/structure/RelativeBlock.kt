@@ -15,25 +15,43 @@ import org.bukkit.configuration.ConfigurationSection
  * @property material   The material the block is made of
  * @property data       The data value of the material
  */
-class RelativeBlock(val x: Int, val y: Int, val z: Int, val material: Material?, val data: Byte?) {
+class RelativeBlock(val x: Int, val y: Int, val z: Int, val material: Material, val data: Byte,
+                    val blockState: ConfigurationSection?) {
 
-    fun place(origin: Location, blockState: ConfigurationSection?) {
+    @JvmOverloads
+    fun place(origin: Location, phase: Int = 0) {
         val newLoc = getLocation(origin)
-        // Mutate the stateo
-        if (this.material != null)
-            newLoc.block.type = this.material
-        if (this.data != null)
-            newLoc.block.data = this.data
-        if (blockState != null) {
-            val state = newLoc.block.state
-            val materialAdapter = MaterialDataAdapter.getAdapter(state.data)
-            materialAdapter?.let {
-                state.data = materialAdapter.deserializeData(state.data, blockState)
+
+        val state = newLoc.block.state
+        when (phase) {
+            0 -> {
+                // Trigger everything at once
+                place(origin, 1)
+                place(origin, 2)
+                place(origin, 3)
             }
-            BlockStateAdapter.getAdapter(newLoc.block.type)?.deserializeState(
-                    state,
-                    blockState)
-            state.update(true, false)
+            1 -> {
+                // Set the material & data
+                newLoc.block.type = this.material
+//                newLoc.block.data = this.data
+            }
+            2 -> {
+                // Set the block state
+                if (blockState != null) {
+                    BlockStateAdapter.getAdapter(state)?.deserializeState(state, blockState)
+                    state.update(true, false)
+                }
+            }
+            3 -> {
+                // Set the block's material data
+                if (blockState != null) {
+                    MaterialDataAdapter.getAdapter(state.data)?.let {
+                        state.data = it.deserializeData(state.data,
+                                blockState)
+                    }
+                    state.update(true, false)
+                }
+            }
         }
     }
 

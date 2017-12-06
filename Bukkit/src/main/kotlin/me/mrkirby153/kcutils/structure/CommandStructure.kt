@@ -41,7 +41,7 @@ class CommandStructure : BaseCommand() {
         val id = currentId++
         placedStructures[id] = Structure(
                 YamlConfiguration.loadConfiguration(File(file))).apply {
-            place(origin)
+            placeAll(origin)
         }
         sender.sendMessage(
                 Chat.message("Structure", "Structure {id} placed at {x} {y} {z}", "{x}",
