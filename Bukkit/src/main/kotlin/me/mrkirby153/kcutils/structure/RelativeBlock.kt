@@ -15,7 +15,7 @@ import org.bukkit.configuration.ConfigurationSection
  * @property material   The material the block is made of
  * @property data       The data value of the material
  */
-class RelativeBlock(val x: Int, val y: Int, val z: Int, val material: Material, val data: Byte,
+class RelativeBlock(val x: Int, val y: Int, val z: Int, val material: Material,
                     val blockState: ConfigurationSection?) {
 
     @JvmOverloads
@@ -33,7 +33,6 @@ class RelativeBlock(val x: Int, val y: Int, val z: Int, val material: Material, 
             1 -> {
                 // Set the material & data
                 newLoc.block.type = this.material
-//                newLoc.block.data = this.data
             }
             2 -> {
                 // Set the block state

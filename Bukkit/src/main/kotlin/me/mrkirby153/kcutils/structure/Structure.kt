@@ -7,6 +7,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockState
+import org.bukkit.block.Container
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -88,7 +89,6 @@ class Structure(private val yaml: YamlConfiguration) : Runnable {
                 }
             }
         }
-        println("Max phase ${this.maxPhase}")
         this.origin = origin
         taskId = plugin.server.scheduler.scheduleSyncRepeatingTask(plugin, this, 0L, period)
     }
@@ -103,7 +103,8 @@ class Structure(private val yaml: YamlConfiguration) : Runnable {
             (it.blockState?.getInt("placeOrder") ?: 0) == this.placePhase
         }
         blocks.forEach { block ->
-            this.originalBlocks.add(block.getLocation(origin!!).block.state)
+            if (subPhase == 1)
+                this.originalBlocks.add(block.getLocation(origin!!).block.state)
 
             block.place(origin!!, subPhase)
         }
@@ -127,8 +128,7 @@ class Structure(private val yaml: YamlConfiguration) : Runnable {
                 continue
 
             val block = RelativeBlock(section.getInt("x"), section.getInt("y"), section.getInt("z"),
-                    Material.valueOf(material), section.getInt("data").toByte(),
-                    section.getConfigurationSection("state"))
+                    Material.valueOf(material), section.getConfigurationSection("state"))
 
             mutableList.add(block)
         }
@@ -142,8 +142,14 @@ class Structure(private val yaml: YamlConfiguration) : Runnable {
         if (!placed)
             return
         this.originalBlocks.forEach { state ->
+            val currentState = state.location.block.state
+            // Clear the inventory of the container before we remove it to prevent popping items on the ground
+            if (currentState is Container) {
+                currentState.inventory.clear()
+            }
             state.update(true, false)
         }
+        this.originalBlocks.clear()
         placed = false
     }
 
@@ -202,9 +208,7 @@ class Structure(private val yaml: YamlConfiguration) : Runnable {
 
                             val adapter = BlockStateAdapter.getAdapter(loc.block.state)
                             val dataAdapter = MaterialDataAdapter.getAdapter(loc.block.state.data)
-                            println("${loc.block.type} - ${loc.block.state}")
                             set("material", loc.block.type.toString())
-                            set("data", loc.block.data)
 
                             val stateSec = getOrCreateSection("state")
                             adapter?.serializeState(

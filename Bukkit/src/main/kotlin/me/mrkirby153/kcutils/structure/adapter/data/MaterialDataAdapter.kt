@@ -21,6 +21,6 @@ object MaterialDataAdapter {
                 return DirectionalData()
             }
         }
-        return null
+        return DefaultMaterialData()
     }
 }

@@ -28,13 +28,13 @@ class ChestAdapter : BlockAdapter<Chest>() {
         get() = 1
     override fun deserialize(state: Chest, config: ConfigurationSection) {
         for (i in 0 until state.blockInventory.size) {
-            state.blockInventory.setItem(i, config.getItemStack("items.$i"))
+            state.snapshotInventory.setItem(i, config.getItemStack("items.$i"))
         }
     }
 
     override fun serialize(state: Chest, config: ConfigurationSection) {
         for (i in 0 until state.blockInventory.size) {
-            config.set("items.$i", state.blockInventory.getItem(i))
+            config.set("items.$i", state.snapshotInventory.getItem(i))
         }
     }
 }
