@@ -5,7 +5,7 @@ package me.mrkirby153.kcutils.paginate
  *
  * @param T The type of the paginator
  */
-class Paginator<T>(private val items: List<T>, private val itemsPerPage: Int) {
+class Paginator<out T>(private val items: List<T>, private val itemsPerPage: Int) {
 
     /**
      * Gets the amount of pages in the paginator
