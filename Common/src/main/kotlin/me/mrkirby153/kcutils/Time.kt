@@ -41,25 +41,8 @@ object Time {
      * @return The converted time
      */
     fun convert(trim: Int, time: Long, type: TimeUnit): Double {
-        var type = type
-        if (type == TimeUnit.FIT) {
-            if (time < 60000)
-                type = TimeUnit.SECONDS
-            else if (time < 3600000)
-                type = TimeUnit.MINUTES
-            else if (time < 86400000)
-                type = TimeUnit.HOURS
-            else
-                type = TimeUnit.DAYS
-        }
-
-        if (type == TimeUnit.DAYS) return trim(trim, time / 86400000.0)
-        if (type == TimeUnit.HOURS) return trim(trim, time / 3600000.0)
-        if (type == TimeUnit.MINUTES) return trim(trim, time / 60000.0)
-        return if (type == TimeUnit.SECONDS)
-            trim(trim, time / 1000.0)
-        else
-            time.toDouble()
+        val t = if (type == TimeUnit.FIT) fitTime(time, TimeUnit.SECONDS) else type
+        return trim(trim, time / t.ms.toDouble())
     }
 
     /**
@@ -77,45 +60,49 @@ object Time {
      * @param trim The amount of decimal places
      * @param time The time
      * @param type The time unit to display in
-     * @param lowest The smallest time unit to display
+     * @param smallest The smallest time unit to display
      * @return A string in human-readable format
      */
     @JvmOverloads
     fun format(trim: Int, time: Long, type: TimeUnit = TimeUnit.FIT,
-               lowest: TimeUnit = TimeUnit.MILLISECONDS): String {
+               smallest: TimeUnit = TimeUnit.MILLISECONDS): String {
         var type = type
         if (time == -1L) return "Permanent"
 
         if (type == TimeUnit.FIT) {
-            if (time < 1000)
-                type = TimeUnit.MILLISECONDS
-            else if (time < 60000)
-                type = TimeUnit.SECONDS
-            else if (time < 3600000)
-                type = TimeUnit.MINUTES
-            else if (time < 86400000)
-                type = TimeUnit.HOURS
-            else
-                type = TimeUnit.DAYS
+            type = fitTime(time, smallest)
+        }
 
-            if (type.ordinal > lowest.ordinal) {
-                type = lowest
+        return buildString {
+            val t = time / type.ms.toDouble()
+            val t1 = if (trim == 0)
+                Math.round(t).toInt().toString()
+            else
+                trim(trim, t).toString()
+            append(t1)
+            append(" ")
+            val end = if (t1 == "1") type.friendlyName.length - 1 else type.friendlyName.length
+            append(type.friendlyName.substring(0 until end))
+        }
+    }
+
+    /**
+     * Calculates the largest time unit of the given time
+     */
+    private fun fitTime(time: Long, smallest: TimeUnit): TimeUnit {
+        var determined: TimeUnit = smallest
+        val values = TimeUnit.values().drop(1)
+        for (i in 0 until values.size) {
+            if (time < values[Math.max(i - 1, 0)].ms) {
+                determined = values[i]
             }
         }
 
-        val text: String
-        if (type == TimeUnit.DAYS)
-            text = trim(trim, time / 86400000.0).toString() + " Days"
-        else if (type == TimeUnit.HOURS)
-            text = trim(trim, time / 3600000.0).toString() + " Hours"
-        else if (type == TimeUnit.MINUTES)
-            text = trim(trim, time / 60000.0).toString() + " Minutes"
-        else if (type == TimeUnit.SECONDS)
-            text = trim(trim, time / 1000.0).toString() + " Seconds"
-        else
-            text = trim(0, time.toDouble()).toString() + " Milliseconds"
-
-        return text
+        return if (determined.smaller(smallest)) {
+            smallest
+        } else {
+            determined
+        }
     }
 
     /**
@@ -169,13 +156,17 @@ object Time {
         return offset
     }
 
-    enum class TimeUnit {
-        FIT,
-        DAYS,
-        HOURS,
-        MINUTES,
-        SECONDS,
-        MILLISECONDS
+    enum class TimeUnit(val ms: Long, val friendlyName: String) {
+        FIT(-1, "FIT"),
+        DAYS(86400000, "Days"),
+        HOURS(3600000, "Hours"),
+        MINUTES(60000, "Minutes"),
+        SECONDS(1000, "Seconds"),
+        MILLISECONDS(1, "Milliseconds");
+
+        fun smaller(other: TimeUnit) = other.ordinal <= this.ordinal
+
+        fun greater(other: TimeUnit) = !smaller(other)
     }
 
 }
