@@ -11,7 +11,7 @@ interface DataStore<in K, V> {
      * @param key The key of the value to retrieve
      * @return  The value in the data store or null
      */
-    fun get(key: K): V?
+    operator fun get(key: K): V?
 
     /**
      * Puts a value in the data store
@@ -21,7 +21,7 @@ interface DataStore<in K, V> {
      *
      * @return The previous value or null
      */
-    fun set(key: K, value: V): V?
+    operator fun set(key: K, value: V): V?
 
     /**
      * Checks if the data store contains a key
