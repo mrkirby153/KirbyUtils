@@ -5,14 +5,32 @@ import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.regex.Pattern
 
 /**
- * Handle conversions from human-readable times and computer readbale times
+ * Handle conversions from human-readable times and computer readable times
  */
 object Time {
 
     val DATE_FORMAT_NOW = "MM-dd-yy HH:mm:ss"
     val DATE_FORMAT_DAY = "MM-dd-yy"
+
+    private val timeMap = mutableMapOf<String, Int>()
+
+    init {
+        timeMap.clear()
+        timeMap.put("ms", 1)
+        timeMap.put("s", 1000)
+        timeMap.put("m", 60000)
+        timeMap.put("h", 3600000)
+        timeMap.put("d", 86400000)
+
+        timeMap.put("milliseconds", 1)
+        timeMap.put("seconds", 1000)
+        timeMap.put("minutes", 60000)
+        timeMap.put("hours", 3600000)
+        timeMap.put("days", 86400000)
+    }
 
     /**
      * Convert milliseconds to the specified time unit
@@ -63,7 +81,8 @@ object Time {
      * @return A string in human-readable format
      */
     @JvmOverloads
-    fun format(trim: Int, time: Long, type: TimeUnit = TimeUnit.FIT, lowest: TimeUnit = TimeUnit.MILLISECONDS): String {
+    fun format(trim: Int, time: Long, type: TimeUnit = TimeUnit.FIT,
+               lowest: TimeUnit = TimeUnit.MILLISECONDS): String {
         var type = type
         if (time == -1L) return "Permanent"
 
@@ -79,7 +98,7 @@ object Time {
             else
                 type = TimeUnit.DAYS
 
-            if(type.ordinal > lowest.ordinal){
+            if (type.ordinal > lowest.ordinal) {
                 type = lowest
             }
         }
@@ -120,12 +139,34 @@ object Time {
             return Math.round(d).toDouble()
         }
         var format = "#.#"
-        for (i in 1..degree - 1) {
+        for (i in 1 until degree) {
             format += "#"
         }
         val symb = DecimalFormatSymbols(Locale.US)
         val twoDForm = DecimalFormat(format, symb)
         return java.lang.Double.valueOf(twoDForm.format(d))
+    }
+
+    /**
+     * Converts a string from a human-readable format (i.e "30 seconds" or "30s") into milliseconds
+     *
+     * @param time The time string
+     * @return The time in milliseconds
+     */
+    fun parse(time: String): Long {
+        val timePattern = Pattern.compile("(\\d+\\s?)(\\D+)")
+        val timeMatcher = timePattern.matcher(time)
+
+        var offset = 0L
+        while (timeMatcher.find()) {
+            val t = timeMatcher.group(1).trim().toLong()
+            val multiplier = timeMatcher.group(2).trim()
+            if (!this.timeMap.containsKey(multiplier)) {
+                throw IllegalArgumentException("Time format \"$multiplier\" not found")
+            }
+            offset += t * (this.timeMap[multiplier] ?: 0)
+        }
+        return offset
     }
 
     enum class TimeUnit {
