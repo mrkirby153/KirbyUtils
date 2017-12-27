@@ -2,7 +2,7 @@ package me.mrkirby153.kcutils.scoreboard
 
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.entity.Player
-import java.util.*
+import java.util.UUID
 
 /**
  * A team on a [Scoreboard][KirbyScoreboard]
@@ -10,14 +10,14 @@ import java.util.*
  * @param teamName  The name of the team
  * @param color     The color of the team
  */
-open class ScoreboardTeam(val teamName: String, val color: ChatColor) {
+open class ScoreboardTeam(val teamName: String, var color: ChatColor) {
 
     /**
      * A list of players on the scoreboard
      */
     val players = mutableSetOf<UUID>()
 
-    val prefixColor = color
+    var prefixColor = color
 
     /**
      * The team name truncated to 16 chars, used for internal reference
