@@ -92,9 +92,13 @@ object Time {
     private fun fitTime(time: Long, smallest: TimeUnit): TimeUnit {
         var determined: TimeUnit = smallest
         val values = TimeUnit.values().drop(1)
-        for (i in 0 until values.size) {
-            if (time < values[Math.max(i - 1, 0)].ms) {
-                determined = values[i]
+        if (time > values.first().ms) {
+            determined = values.first()
+        }else {
+            for (i in 0 until values.size) {
+                if (time < values[Math.max(i - 1, 0)].ms) {
+                    determined = values[i]
+                }
             }
         }
 
