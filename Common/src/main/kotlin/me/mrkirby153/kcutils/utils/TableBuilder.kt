@@ -7,7 +7,7 @@ package me.mrkirby153.kcutils.utils
  */
 class TableBuilder(val columns: Array<String>) {
 
-    private val rows = mutableListOf<Array<String>>()
+    private val rows = mutableListOf<Array<String?>>()
 
     /**
      * Builds and returns the header of the table
@@ -45,8 +45,9 @@ class TableBuilder(val columns: Array<String>) {
                     if(index >= columns.size)
                         return@forEachIndexed
                     append(" ")
-                    val remaining = Math.max(getColSize(index) - data.length, 0)
-                    append(data)
+                    val d = data ?: "NULL"
+                    val remaining = Math.max(getColSize(index) - d.length, 0)
+                    append(d)
                     append(" ".repeat(remaining))
                     append(" |")
                 }
@@ -77,7 +78,7 @@ class TableBuilder(val columns: Array<String>) {
         var maxLength = columns[index].length
         rows.forEach { row ->
             if (index < row.size) {
-                val data = row[index]
+                val data = row[index] ?: "NULL"
                 if (maxLength < data.length)
                     maxLength = data.length
             }
@@ -90,7 +91,7 @@ class TableBuilder(val columns: Array<String>) {
      *
      * @param data The row to add
      */
-    fun addRow(data: Array<String>) {
+    fun addRow(data: Array<String?>) {
         this.rows.add(data)
     }
 }
