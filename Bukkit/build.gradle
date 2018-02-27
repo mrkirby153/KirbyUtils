@@ -15,12 +15,12 @@ dependencies {
     shadow project(':KirbyUtils-Common')
     compile 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
     compile group: 'com.comphenix.protocol', name: 'ProtocolLib', version: '4.4.0-SNAPSHOT'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     shadow "org.json:json:20170516"
     compile "co.aikar:acf-core:0.5.0-SNAPSHOT"
 }
 buildscript {
-    ext.kotlin_version = '1.2.0'
+    ext.kotlin_version = '1.2.21'
     repositories {
         mavenCentral()
     }
