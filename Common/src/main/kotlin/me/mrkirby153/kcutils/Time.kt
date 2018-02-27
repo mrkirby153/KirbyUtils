@@ -81,8 +81,61 @@ object Time {
                 trim(trim, t).toString()
             append(t1)
             append(" ")
-            append(if(t1 == "1") type.singleName else type.pluralName)
+            append(if (t1 == "1") type.singleName else type.pluralName)
         }
+    }
+
+    /**
+     * Formats milliseconds into human readable format
+     *
+     * @param time The time
+     * @param smallest The smallest unit to display
+     * @return A string in human-readable format
+     */
+    @JvmOverloads
+    fun formatLong(time: Long, smallest: TimeUnit = TimeUnit.SECONDS,
+                   short: Boolean = false): String {
+        val string = buildString {
+            var mutableTime = time
+            val timeUnits = TimeUnit.values().drop(1)
+            val map = mutableMapOf<TimeUnit, Long>()
+            timeUnits.forEach {
+                if (it.ordinal > smallest.ordinal)
+                    return@forEach
+                val count = mutableTime / it.ms
+                if (count > 0) {
+                    map[it] = count
+                    mutableTime -= it.ms * count
+                }
+            }
+
+            map.entries.forEachIndexed { index, entry ->
+                val unit = entry.key
+                val t = entry.value
+                append(t)
+                if (short)
+                    append(unit.shortName)
+                else {
+                    append(" ")
+                    if (t == 1L) {
+                        append(unit.singleName)
+                    } else {
+                        append(unit.pluralName)
+                    }
+                }
+                if (!short) {
+                    if (index + 1 == map.entries.size - 1) {
+                        if (map.entries.size > 2)
+                            append(",")
+                        append(" and ")
+                    } else {
+                        if (index + 1 < map.entries.size)
+                            append(", ")
+                    }
+                }
+            }
+        }
+        return string
     }
 
     /**
@@ -159,13 +212,14 @@ object Time {
         return offset
     }
 
-    enum class TimeUnit(val ms: Long, val pluralName: String, val singleName: String) {
-        FIT(-1, "FIT", "FIT"),
-        DAYS(86400000, "Days", "Day"),
-        HOURS(3600000, "Hours", "Hour"),
-        MINUTES(60000, "Minutes", "Minute"),
-        SECONDS(1000, "Seconds", "Second"),
-        MILLISECONDS(1, "Milliseconds", "Millisecond");
+    enum class TimeUnit(val ms: Long, val pluralName: String, val singleName: String,
+                        val shortName: String) {
+        FIT(-1, "FIT", "FIT", "FIT"),
+        DAYS(86400000, "Days", "Day", "d"),
+        HOURS(3600000, "Hours", "Hour", "h"),
+        MINUTES(60000, "Minutes", "Minute", "m"),
+        SECONDS(1000, "Seconds", "Second", "s"),
+        MILLISECONDS(1, "Milliseconds", "Millisecond", "ms");
 
         fun smaller(other: TimeUnit) = other.ordinal <= this.ordinal
 
