@@ -81,8 +81,7 @@ object Time {
                 trim(trim, t).toString()
             append(t1)
             append(" ")
-            val end = if (t1 == "1") type.friendlyName.length - 1 else type.friendlyName.length
-            append(type.friendlyName.substring(0 until end))
+            append(if(t1 == "1") type.singleName else type.pluralName)
         }
     }
 
@@ -94,7 +93,7 @@ object Time {
         val values = TimeUnit.values().drop(1)
         if (time > values.first().ms) {
             determined = values.first()
-        }else {
+        } else {
             for (i in 0 until values.size) {
                 if (time < values[Math.max(i - 1, 0)].ms) {
                     determined = values[i]
@@ -160,13 +159,13 @@ object Time {
         return offset
     }
 
-    enum class TimeUnit(val ms: Long, val friendlyName: String) {
-        FIT(-1, "FIT"),
-        DAYS(86400000, "Days"),
-        HOURS(3600000, "Hours"),
-        MINUTES(60000, "Minutes"),
-        SECONDS(1000, "Seconds"),
-        MILLISECONDS(1, "Milliseconds");
+    enum class TimeUnit(val ms: Long, val pluralName: String, val singleName: String) {
+        FIT(-1, "FIT", "FIT"),
+        DAYS(86400000, "Days", "Day"),
+        HOURS(3600000, "Hours", "Hour"),
+        MINUTES(60000, "Minutes", "Minute"),
+        SECONDS(1000, "Seconds", "Second"),
+        MILLISECONDS(1, "Milliseconds", "Millisecond");
 
         fun smaller(other: TimeUnit) = other.ordinal <= this.ordinal
 
