@@ -15,21 +15,25 @@ object Time {
     val DATE_FORMAT_NOW = "MM-dd-yy HH:mm:ss"
     val DATE_FORMAT_DAY = "MM-dd-yy"
 
-    private val timeMap = mutableMapOf<String, Int>()
+    private val timeMap = mutableMapOf<String, Long>()
 
     init {
         timeMap.clear()
-        timeMap.put("ms", 1)
-        timeMap.put("s", 1000)
-        timeMap.put("m", 60000)
-        timeMap.put("h", 3600000)
-        timeMap.put("d", 86400000)
+        timeMap["ms"] = 1
+        timeMap["s"] = 1000
+        timeMap["m"] = 60000
+        timeMap["h"] = 3600000
+        timeMap["d"] = 86400000
+        timeMap["w"] = 2073600000
+        timeMap["y"] = 31540000000
 
-        timeMap.put("milliseconds", 1)
-        timeMap.put("seconds", 1000)
-        timeMap.put("minutes", 60000)
-        timeMap.put("hours", 3600000)
-        timeMap.put("days", 86400000)
+        timeMap["milliseconds"] = 1
+        timeMap["seconds"] = 1000
+        timeMap["minutes"] = 60000
+        timeMap["hours"] = 3600000
+        timeMap["days"] = 86400000
+        timeMap["weeks"] = 604800000
+        timeMap["years"] = 31540000000
     }
 
     /**
@@ -215,6 +219,8 @@ object Time {
     enum class TimeUnit(val ms: Long, val pluralName: String, val singleName: String,
                         val shortName: String) {
         FIT(-1, "FIT", "FIT", "FIT"),
+        YEARS(31540000000, "Years", "Year", "y"),
+        WEEKS(2073600000, "Weeks", "Week", "w"),
         DAYS(86400000, "Days", "Day", "d"),
         HOURS(3600000, "Hours", "Hour", "h"),
         MINUTES(60000, "Minutes", "Minute", "m"),
