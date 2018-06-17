@@ -144,7 +144,7 @@ object Time {
     private fun fitTime(time: Long, smallest: TimeUnit): TimeUnit {
         var determined: TimeUnit = smallest
         val values = TimeUnit.values().drop(1)
-        if (time > values.first().ms) {
+        if (time >= values.first().ms) {
             determined = values.first()
         } else {
             for (i in 0 until values.size) {
