@@ -53,16 +53,11 @@ subprojects {
         tasks.publish.dependsOn build
         repositories {
             maven {
-                name = "snapshot"
-                url = "https://repo.mrkirby153.com/repository/maven-snapshots/"
-                credentials {
-                    username project.hasProperty('repositoryUsername') ? project.repositoryUsername : System.getenv("REPO_USERNAME")
-                    password project.hasProperty('repositoryPassword') ? project.repositoryPassword : System.getenv("REPO_PASS")
-                }
-            }
-            maven {
-                name = "release"
-                url = "https://repo.mrkirby153.com/repository/maven-releases/"
+                name = "mrkirby153"
+                if (project.version.endsWith("-SNAPSHOT"))
+                    url = "https://repo.mrkirby153.com/repository/maven-snapshots/"
+                else
+                    url = "https://repo.mrkirby153.com/repository/maven-releases/"
                 credentials {
                     username project.hasProperty('repositoryUsername') ? project.repositoryUsername : System.getenv("REPO_USERNAME")
                     password project.hasProperty('repositoryPassword') ? project.repositoryPassword : System.getenv("REPO_PASS")
