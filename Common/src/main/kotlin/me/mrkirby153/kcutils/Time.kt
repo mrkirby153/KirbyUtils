@@ -12,8 +12,8 @@ import java.util.regex.Pattern
  */
 object Time {
 
-    val DATE_FORMAT_NOW = "MM-dd-yy HH:mm:ss"
-    val DATE_FORMAT_DAY = "MM-dd-yy"
+    private const val DATE_FORMAT_NOW = "MM-dd-yy HH:mm:ss"
+    private const val DATE_FORMAT_DAY = "MM-dd-yy"
 
     private val timeMap = mutableMapOf<String, Long>()
 

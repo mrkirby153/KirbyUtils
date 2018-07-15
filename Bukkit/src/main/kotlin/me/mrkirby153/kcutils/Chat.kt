@@ -22,6 +22,7 @@ object Chat {
      * @param message The message to display in the error
      * @return A [net.md_5.bungee.api.chat.TextComponent]
      */
+    @JvmStatic
     fun error(message: String): TextComponent {
         return message("Error", message)
     }
@@ -34,6 +35,7 @@ object Chat {
      * @param styles  Optional styles to apply to the chat
      * @return A [TextComponent]
      */
+    @JvmStatic
     fun formattedChat(message: String, color: ChatColor, vararg styles: Style): TextComponent {
         val component = TextComponent(message)
         component.color = color
@@ -57,7 +59,9 @@ object Chat {
      * @param hoverText The hover text
      * @return A [TextComponent] when clicked will open the URL
      */
-    fun hyperlink(display: BaseComponent, hyperlink: String, vararg hoverText: BaseComponent): TextComponent {
+    @JvmStatic
+    fun hyperlink(display: BaseComponent, hyperlink: String,
+                  vararg hoverText: BaseComponent): TextComponent {
         val component = TextComponent(display)
         val hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverText)
         val clickEvent = ClickEvent(ClickEvent.Action.OPEN_URL, hyperlink)
@@ -72,6 +76,7 @@ object Chat {
      * @param message The message
      * @return The legacy error message
      */
+    @JvmStatic
     fun legacyError(message: String): String {
         return error(message).toLegacyText()
     }
@@ -83,12 +88,21 @@ object Chat {
      * @param message The message to generate
      * @return A [TextComponent] of the message
      */
+    @JvmStatic
     fun message(tag: String, message: String): TextComponent {
-        val component = formattedChat(tag + "> ", TAG_COLOR)
+        val component = formattedChat("$tag> ", TAG_COLOR)
         component.addExtra(formattedChat(message, TEXT_COLOR))
         return component
     }
 
+    /**
+     * Generates a message with formatted keys
+     *
+     * @param tag A tag to prepend to the message
+     * @param message The message with `{name}` representing strings to replace
+     * @param replacements  A list of replacements
+     */
+    @JvmStatic
     fun message(tag: String, message: String, vararg replacements: Any): BaseComponent {
         var msg = message
         val builder = StringBuilder()
@@ -99,7 +113,8 @@ object Chat {
         run {
             var i = 0
             while (i < replacements.size) {
-                msg = msg.replace(replacements[i].toString(), ACCENT_COLOR.toString() + replacements[i + 1].toString() + TEXT_COLOR)
+                msg = msg.replace(replacements[i].toString(),
+                        ACCENT_COLOR.toString() + replacements[i + 1].toString() + TEXT_COLOR)
                 i += 2
             }
         }
@@ -118,6 +133,7 @@ object Chat {
      * @param message The message
      * @return A [TextComponent] of the message
      */
+    @JvmStatic
     fun message(message: String): TextComponent {
         return message("", message)
     }
@@ -128,6 +144,7 @@ object Chat {
      * @param player   The player to send messages to
      * @param messages The messages to send
      */
+    @JvmStatic
     fun sendMultiple(player: Player, vararg messages: BaseComponent) {
         for (m in messages) {
             player.spigot().sendMessage(m)
