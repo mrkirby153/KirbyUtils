@@ -14,8 +14,8 @@ object BlockStateAdapter {
 
 
     init {
-        adapters.put(Sign::class.java, SignAdapter())
-        adapters.put(Chest::class.java, ChestAdapter())
+        adapters[Sign::class.java] = SignAdapter()
+        adapters[Chest::class.java] = ChestAdapter()
     }
 
     /**
@@ -25,6 +25,7 @@ object BlockStateAdapter {
      *
      * @return The adapter, or null if it doesn't exist
      */
+    @JvmStatic
     fun getAdapter(state: BlockState): BlockAdapter<*>? {
         var foundAdapter: BlockAdapter<*>? = null
         adapters.forEach { clazz, adapter ->
@@ -32,5 +33,16 @@ object BlockStateAdapter {
                 foundAdapter = adapter
         }
         return foundAdapter
+    }
+
+    /**
+     * Registers a [BlockStateAdapter]
+     *
+     * @param state The [BlockState] to register the adapater for
+     * @param adapter The adapter to register
+     */
+    @JvmStatic
+    fun registerAdapter(state: Class<out BlockState>, adapter: BlockAdapter<*>) {
+        this.adapters[state] = adapter
     }
 }
