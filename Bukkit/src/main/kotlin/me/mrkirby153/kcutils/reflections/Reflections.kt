@@ -24,6 +24,11 @@ object Reflections {
         return Class.forName("net.minecraft.server.$nmsVersion.$name")
     }
 
+    @JvmStatic
+    fun getWrappedNMSClass(name: String): WrappedReflectedClass {
+        return WrappedReflectedClass(getNMSClass(name))
+    }
+
     /**
      * Gets the player connection
      *
@@ -41,12 +46,28 @@ object Reflections {
     /**
      * Sends a packet to a player
      *
-     * @param player The player
+     * @param p The player
      * @param packet The packet
      */
+    @JvmStatic
     fun sendPacket(p: Player, packet: Any) {
         val plrConnection = getPlayerConnection(p)
         plrConnection.javaClass.getMethod("sendPacket", getNMSClass("Packet")).invoke(plrConnection,
                 packet)
+    }
+
+    /**
+     * Sends a packet to a player
+     *
+     * @param p The player
+     * @param packet The [WrappedReflectedClass] representing a packet
+     */
+    @JvmStatic
+    fun sendPacket(p: Player, packet: WrappedReflectedClass) {
+        val instance = packet.get()
+        if (!getNMSClass("Packet").isAssignableFrom(instance.javaClass))
+            throw IllegalArgumentException(
+                    "Attempting to send non-packet (${instance.javaClass.canonicalName}) to a player")
+        sendPacket(p, packet.get())
     }
 }
