@@ -29,20 +29,14 @@ class TestPlugin : JavaPlugin(), Listener {
 
     fun breakBlock(player: Player, location: Location) {
         val id = Random().nextInt()
-        val packet = Reflections.getNMSClass("PacketPlayOutBlockBreakAnimation")
 
-        val constructor = packet.getConstructor(Int::class.java, Reflections.getNMSClass("BlockPosition"), Int::class.java)
+        val blockPosition = Reflections.getInstance("BlockPosition", location.blockX,
+                location.blockY, location.blockZ)
 
-
-        val instance = constructor.newInstance(id, getBlockPosition(location), 3)
-
-        Reflections.sendPacket(player, instance)
-    }
-
-    fun getBlockPosition(location: Location): Any {
-        val blockPosClass = Reflections.getNMSClass("BlockPosition")
-        val constructor = blockPosClass.getConstructor(Int::class.java, Int::class.java,
-                Int::class.java)
-        return constructor.newInstance(location.blockX, location.blockY, location.blockZ)
+        val packet = Reflections.getWrappedNMSClass("PacketPlayOutBlockBreakAnimation")
+        packet.set(Integer::class.java, 0, id)
+        packet.set("BlockPosition", 0, blockPosition)
+        packet.set(Int::class.java, 1, 8)
+        Reflections.sendPacket(player, packet)
     }
 }

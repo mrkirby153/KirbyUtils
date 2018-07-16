@@ -43,7 +43,7 @@ class WrappedReflectedClass(val clazz: Class<*>) {
      * @param value The value of the field
      */
     fun set(clazz: Class<*>, index: Int, value: Any) {
-        val field = fields[clazz]?.get(index) ?: throw IllegalArgumentException("Not found!")
+        val field = fields[Reflections.mapToPrimitive(clazz)]?.get(index) ?: throw IllegalArgumentException("Not found!")
         fieldValues[field] = value
     }
 
