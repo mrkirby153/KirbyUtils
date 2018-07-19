@@ -2,6 +2,8 @@ package me.mrkirby153.kcutils.reflections
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 
 object Reflections {
@@ -125,7 +127,158 @@ object Reflections {
      * @param clazz The class to map to its primitive type
      * @return The primitive type of the class, if applicable, or the class passed in
      */
+    @JvmStatic
     fun mapToPrimitive(clazz: Class<*>): Class<*> {
         return this.primitiveTypeMap.getOrDefault(clazz, clazz)
     }
+
+    /**
+     * Invokes a method on a class
+     *
+     * @param clazz The class to execute the method on
+     * @param methodName The method name to execute
+     * @param instance An instance of the class or null if invoking a static method
+     * @param params Any parameters
+     *
+     * @return The method's result
+     */
+    @Suppress("UNCHECKED_CAST")
+    @JvmStatic
+    @JvmOverloads
+    fun <T> invokeMethod(clazz: Class<*>, methodName: String, instance: Any?,
+                     methodParams: Array<Class<*>> = arrayOf(), vararg params: Any): T {
+        val method: Method = getMethod(clazz, methodName, methodParams)
+        method.isAccessible = true
+        return method.invoke(instance, *params) as T
+    }
+
+
+    /**
+     * Invokes a method on a class
+     *
+     * @param instance The instance to invoke the method on
+     * @param method The method to invoke
+     * @param params Any method parameters
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun <T> invoke(instance: Any, method: String, methodParams: Array<Class<*>> = arrayOf(),
+               vararg params: Any) = invokeMethod<T>(instance.javaClass,
+            method, instance, methodParams, *params)
+
+    /**
+     * Sets a field on a class
+     *
+     * @param clazz The class to set the field on
+     * @param fieldName The field name
+     * @param instance An instance of the class
+     * @param value The value to set
+     */
+    @JvmStatic
+    fun setField(clazz: Class<*>, fieldName: String, instance: Any?, value: Any?) {
+        val field: Field = getField(clazz, fieldName)
+        field.isAccessible = true
+        field.set(instance, value)
+    }
+
+    /**
+     * Sets a field on an object
+     *
+     * @param instance The instance to use
+     * @param field The field name to use
+     * @param value The value to set
+     */
+    @JvmStatic
+    fun set(instance: Any, field: String, value: Any?) = setField(instance.javaClass, field,
+            instance, value)
+
+    /**
+     * Gets a field's value
+     *
+     * @param clazz The class
+     * @param fieldName The name of the field
+     * @param instance The instance of the object
+     *
+     * @return The field's value
+     */
+    @Suppress("UNCHECKED_CAST")
+    @JvmStatic
+    fun <T> get(clazz: Class<*>, fieldName: String, instance: Any): T {
+        val field = getField(clazz, fieldName)
+        return field.get(instance) as T
+    }
+
+    /**
+     * Gets a field's value
+     *
+     * @param obj The object
+     * @param name The name of the field
+     * @return The field
+     */
+    @JvmStatic
+    fun <T> get(obj: Any, name: String) = get<T>(obj.javaClass, name, obj)
+
+
+    /**
+     * Gets a field from a class
+     *
+     * @param clazz The class
+     * @param fieldName The name
+     *
+     * @return The field
+     * @throws NoSuchFieldException If the field isn't found
+     */
+    private fun getField(clazz: Class<*>,
+                         fieldName: String): Field {
+        var c: Class<*>? = clazz
+        var field: Field? = null
+        while (c != null) {
+            field = c.declaredFields.firstOrNull { it.name == fieldName }
+            if (field != null)
+                break
+            c = c.superclass // Recurse up
+        }
+        if (field == null)
+            throw NoSuchFieldException(fieldName)
+        field.isAccessible = true
+        return field
+    }
+
+
+    /**
+     * Gets a method from a class, recursing up the inheritance tree
+     *
+     * @param clazz The class
+     * @param methodName The name of the method
+     * @param methodParams The method param types
+     *
+     * @return The method
+     * @throws NoSuchElementException If the method isn't found
+     */
+    private fun getMethod(clazz: Class<*>, methodName: String,
+                          methodParams: Array<Class<*>>): Method {
+        var c: Class<*>? = clazz
+        var method: Method? = null
+        while (c != null) {
+            method = c.declaredMethods.firstOrNull { m ->
+                if (m.name != methodName)
+                    return@firstOrNull false
+
+                val missingParams = methodParams.filter { it !in m.parameterTypes }
+                if (missingParams.isNotEmpty())
+                    return@firstOrNull false
+
+                return@firstOrNull true
+            }
+            if (method != null)
+                break // Found our method, break out
+            c = c.superclass // recurse up the chain
+        }
+        if (method == null)
+            throw NoSuchMethodException(
+                    "${clazz.canonicalName}.$methodName(${methodParams.joinToString(
+                            ",") { it.canonicalName }})")
+        return method
+    }
+
 }
