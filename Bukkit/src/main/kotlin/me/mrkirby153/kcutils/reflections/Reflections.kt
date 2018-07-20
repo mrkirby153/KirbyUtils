@@ -2,6 +2,7 @@ package me.mrkirby153.kcutils.reflections
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
@@ -22,6 +23,7 @@ object Reflections {
         primitiveTypeMap[java.lang.Long::class.java] = java.lang.Long.TYPE
         primitiveTypeMap[java.lang.Double::class.java] = java.lang.Double.TYPE
         primitiveTypeMap[java.lang.Void::class.java] = java.lang.Void.TYPE
+        primitiveTypeMap[java.lang.Float::class.java] = java.lang.Float.TYPE
     }
 
     val nmsVersion: String
@@ -77,8 +79,42 @@ object Reflections {
     @JvmStatic
     fun getInstance(clazz: Class<*>, vararg params: Any): Any {
         val types = params.map { mapToPrimitive(it.javaClass) }.toTypedArray()
-        val constructor = clazz.getConstructor(*types)
-        return constructor.newInstance(*params)
+
+        // Find the constructor
+
+        var constructor: Constructor<*>? = null
+        clazz.constructors.filter { it.parameterCount == types.size }.forEach { potentialConstructor ->
+            val constructorParamTypes = potentialConstructor.parameterTypes
+            var index = 0
+
+            while (index < constructorParamTypes.size) {
+                // Try the base class then try the super classes
+                var found = false
+                var c: Class<*>? = types[index]
+                while (c != null) {
+                    if (constructorParamTypes[index] == c) {
+                        found = true
+                        break
+                    } else {
+                        c = c.superclass
+                    }
+                }
+                if (!found) {
+                    // This constructor param does not match. No sense in continuing further
+                    return@forEach
+                } else {
+                    // Successfully found the class, lets keep going
+                    index++
+                }
+            }
+            // Presumably at this point we've matched all the parameters
+            constructor = potentialConstructor
+        }
+        if (constructor == null)
+            throw NoSuchMethodException("${clazz.canonicalName}.<init>(${types.joinToString(
+                    ",") { it.canonicalName }})")
+
+        return constructor!!.newInstance(*params)
     }
 
     /**
@@ -145,9 +181,9 @@ object Reflections {
     @Suppress("UNCHECKED_CAST")
     @JvmStatic
     @JvmOverloads
-    fun <T> invokeMethod(clazz: Class<*>, methodName: String, instance: Any?,
-                     methodParams: Array<Class<*>> = arrayOf(), vararg params: Any): T {
-        val method: Method = getMethod(clazz, methodName, methodParams)
+    fun <T> invokeMethod(clazz: Class<*>, methodName: String, instance: Any?, vararg params: Any): T {
+        val paramTypes = params.map { mapToPrimitive(it.javaClass) }.toTypedArray()
+        val method: Method = getMethod(clazz, methodName, paramTypes)
         method.isAccessible = true
         return method.invoke(instance, *params) as T
     }
@@ -162,9 +198,9 @@ object Reflections {
      */
     @JvmStatic
     @JvmOverloads
-    fun <T> invoke(instance: Any, method: String, methodParams: Array<Class<*>> = arrayOf(),
-               vararg params: Any) = invokeMethod<T>(instance.javaClass,
-            method, instance, methodParams, *params)
+    fun <T> invoke(instance: Any, method: String,
+                   vararg params: Any) = invokeMethod<T>(instance.javaClass,
+            method, instance, *params)
 
     /**
      * Sets a field on a class
@@ -220,6 +256,19 @@ object Reflections {
 
 
     /**
+     * Gets an enum's value
+     *
+     * @param clazz The enum class
+     * @param value The enum name
+     * @return The enum
+     */
+    @JvmStatic
+    fun getEnumValue(clazz: Class<*>, value: String): Any {
+        return invokeMethod<Any>(clazz, "valueOf", null, value)
+    }
+
+
+    /**
      * Gets a field from a class
      *
      * @param clazz The class
@@ -258,27 +307,45 @@ object Reflections {
     private fun getMethod(clazz: Class<*>, methodName: String,
                           methodParams: Array<Class<*>>): Method {
         var c: Class<*>? = clazz
-        var method: Method? = null
+        val methods = mutableListOf<Method>()
+
         while (c != null) {
-            method = c.declaredMethods.firstOrNull { m ->
-                if (m.name != methodName)
-                    return@firstOrNull false
-
-                val missingParams = methodParams.filter { it !in m.parameterTypes }
-                if (missingParams.isNotEmpty())
-                    return@firstOrNull false
-
-                return@firstOrNull true
-            }
-            if (method != null)
-                break // Found our method, break out
-            c = c.superclass // recurse up the chain
+            methods.addAll(
+                    c.methods.filter { it.name == methodName && it.parameterCount == methodParams.size })
+            c = c.superclass
         }
-        if (method == null)
+
+        var method: Method? = null
+        methods.forEach { potentialMethod ->
+            val params = potentialMethod.parameterTypes
+            var index = 0
+
+            while (index < params.size) {
+                var found = false
+                var c1: Class<*>? = methodParams[index]
+                while (c1 != null) {
+                    if (params[index] == c1) {
+                        found = true
+                        break
+                    } else {
+                        c1 = c1.superclass
+                    }
+                }
+                if (!found) {
+                    return@forEach
+                } else {
+                    index++
+                }
+            }
+            method = potentialMethod
+        }
+        // Find the method that matches the parameters
+        if (method == null) {
             throw NoSuchMethodException(
                     "${clazz.canonicalName}.$methodName(${methodParams.joinToString(
                             ",") { it.canonicalName }})")
-        return method
+        }
+        return method!!
     }
 
 }
