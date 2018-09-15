@@ -4,8 +4,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
-        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:0.9.15'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:0.9.17'
     }
 }
 allprojects {
@@ -65,8 +65,8 @@ subprojects {
             }
         }
         publications {
-            jar(MavenPublication) {
-                from components.shadow
+            jar(MavenPublication) { publication ->
+                project.shadow.component(publication)
                 artifact tasks.sourceJar {
                     classifier = 'sources'
                 }
