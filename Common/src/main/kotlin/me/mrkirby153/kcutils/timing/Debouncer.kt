@@ -14,7 +14,7 @@ class Debouncer<T>(private val runnable: Consumer<T>, threadFactory: ThreadFacto
     private val scheduler: ScheduledExecutorService
     private val delayedMap = ConcurrentHashMap<T, Future<*>>()
 
-    private var nextRun = 0L
+    private var nextRunMap = ConcurrentHashMap<T, Long>()
 
     init {
         if (threadFactory != null) {
@@ -43,21 +43,23 @@ class Debouncer<T>(private val runnable: Consumer<T>, threadFactory: ThreadFacto
             prev?.cancel(true)
         }
         if (mode == Mode.LEADING) {
-            if (System.currentTimeMillis() > nextRun) {
+            if (System.currentTimeMillis() > nextRunMap[key] ?: 0) {
                 try {
                     runnable.accept(key)
                 } finally {
-                    nextRun = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(delay,
+                    nextRunMap[key] = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(
+                            delay,
                             unit)
                 }
             }
         }
         if (mode == Mode.BOTH) {
-            if (System.currentTimeMillis() > nextRun) {
+            if (System.currentTimeMillis() > nextRunMap[key] ?: 0) {
                 try {
                     runnable.accept(key)
                 } finally {
-                    nextRun = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(delay,
+                    nextRunMap[key] = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(
+                            delay,
                             unit)
                 }
             } else {
@@ -67,7 +69,8 @@ class Debouncer<T>(private val runnable: Consumer<T>, threadFactory: ThreadFacto
                     } finally {
                         delayedMap.remove(key)
                     }
-                }, nextRun - System.currentTimeMillis(), TimeUnit.MILLISECONDS))
+                }, (nextRunMap[key] ?: System.currentTimeMillis()) - System.currentTimeMillis(),
+                        TimeUnit.MILLISECONDS))
                 prev?.cancel(true)
             }
         }
