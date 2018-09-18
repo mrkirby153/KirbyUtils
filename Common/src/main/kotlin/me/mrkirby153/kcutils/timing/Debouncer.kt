@@ -8,6 +8,17 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
+/**
+ * Debounces (delays execution) a [Consumer].
+ *
+ * The debouncer has three modes:
+ * * **LEADING** - The first event will call the [Consumer] and any subsequent triggers will be ignored
+ * until the time period has passed
+ * * **TRAILING** - The [Consumer] is called after the provided delay. Any triggers during the wait period
+ * will replace the event and reset the timer
+ * * **BOTH** - The first event will call the [Consumer] and any subsequent triggers will be queued until
+ * the period has elapsed
+ */
 class Debouncer<T>(private val runnable: Consumer<T?>, threadFactory: ThreadFactory? = null,
                    private val mode: Mode = Mode.TRAILING) {
 
@@ -83,6 +94,12 @@ class Debouncer<T>(private val runnable: Consumer<T?>, threadFactory: ThreadFact
         scheduler.shutdownNow()
     }
 
+    /**
+     * If the debouncer has any tasks currently pending execution
+     * **Note:** This only applies when the mode is `TRAILING` or `BOTH`
+     *
+     * @return True if there are events queued up that are pending execution.
+     */
     fun hasPending(): Boolean {
         if (mode == Mode.TRAILING || mode == Mode.BOTH) {
             return delayedMap.size > 0
@@ -90,6 +107,9 @@ class Debouncer<T>(private val runnable: Consumer<T?>, threadFactory: ThreadFact
         return false
     }
 
+    /**
+     * The mode of the [Debouncer]
+     */
     enum class Mode {
         LEADING,
         TRAILING,

@@ -65,6 +65,7 @@ object Time {
      * @param time The time
      * @param type The time unit to display in
      * @param smallest The smallest time unit to display
+     *
      * @return A string in human-readable format
      */
     @JvmOverloads
@@ -94,6 +95,7 @@ object Time {
      *
      * @param time The time
      * @param smallest The smallest unit to display
+     *
      * @return A string in human-readable format
      */
     @JvmOverloads
@@ -179,6 +181,7 @@ object Time {
      *
      * @param degree The quantity of decimal places
      * @param d      The double to trim
+     *
      * @return A trimmed double
      */
     fun trim(degree: Int, d: Double): Double {
@@ -198,6 +201,7 @@ object Time {
      * Converts a string from a human-readable format (i.e "30 seconds" or "30s") into milliseconds
      *
      * @param time The time string
+     *
      * @return The time in milliseconds
      */
     fun parse(time: String): Long {
@@ -216,6 +220,9 @@ object Time {
         return offset
     }
 
+    /**
+     * An enum representing a time unit
+     */
     enum class TimeUnit(val ms: Long, val pluralName: String, val singleName: String,
                         val shortName: String) {
         FIT(-1, "FIT", "FIT", "FIT"),

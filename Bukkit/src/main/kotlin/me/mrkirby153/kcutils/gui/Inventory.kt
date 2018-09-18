@@ -14,7 +14,8 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.*
+import java.util.HashMap
+import java.util.UUID
 import java.util.function.BiConsumer
 
 /**
@@ -181,14 +182,14 @@ abstract class Inventory<T : JavaPlugin>(protected var plugin: T, protected var 
 
     companion object {
 
-        private val MIN_ROWS = 1
-        private val MIN_COLUMNS = 1
-        private val MAX_ROWS = 3
-        private val MAX_COLUMNS = 9
-        private val ROW_OFFSET = 1
-        private val COLUMN_OFFSET = 1
-        private val COLUMNS_PER_ROW = 9
-        private val PLAYER_INV_START_SLOT = 9
+        private const val MIN_ROWS = 1
+        private const val MIN_COLUMNS = 1
+        private const val MAX_ROWS = 3
+        private const val MAX_COLUMNS = 9
+        private const val ROW_OFFSET = 1
+        private const val COLUMN_OFFSET = 1
+        private const val COLUMNS_PER_ROW = 9
+        private const val PLAYER_INV_START_SLOT = 9
         private val openInventories = HashMap<UUID, Inventory<out JavaPlugin>>()
 
         /**

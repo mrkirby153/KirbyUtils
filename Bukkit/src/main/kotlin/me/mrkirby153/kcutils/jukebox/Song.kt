@@ -71,7 +71,6 @@ class Song(val file: File) {
      * Parse all the notes in the song
      */
     private fun parseNotes() {
-        println("Parsing notes")
         var tick = 0
         while (true) {
             val jumps = buffer.short

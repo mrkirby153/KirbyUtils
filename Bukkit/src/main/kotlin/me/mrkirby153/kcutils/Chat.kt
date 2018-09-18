@@ -20,6 +20,7 @@ object Chat {
      * Constructs an error message
      *
      * @param message The message to display in the error
+     *
      * @return A [net.md_5.bungee.api.chat.TextComponent]
      */
     @JvmStatic
@@ -33,6 +34,7 @@ object Chat {
      * @param message The message to format
      * @param color   The color of the message
      * @param styles  Optional styles to apply to the chat
+     *
      * @return A [TextComponent]
      */
     @JvmStatic
@@ -57,6 +59,7 @@ object Chat {
      * @param display   The text to display
      * @param hyperlink The hyperlink to link to
      * @param hoverText The hover text
+     *
      * @return A [TextComponent] when clicked will open the URL
      */
     @JvmStatic
@@ -74,6 +77,7 @@ object Chat {
      * Generates a legacy text error message
      *
      * @param message The message
+     *
      * @return The legacy error message
      */
     @JvmStatic
@@ -86,6 +90,7 @@ object Chat {
      *
      * @param tag     A tag to prepend to the message
      * @param message The message to generate
+     *
      * @return A [TextComponent] of the message
      */
     @JvmStatic
@@ -131,6 +136,7 @@ object Chat {
      * Generates a message with no tag, only an arrow
      *
      * @param message The message
+     *
      * @return A [TextComponent] of the message
      */
     @JvmStatic

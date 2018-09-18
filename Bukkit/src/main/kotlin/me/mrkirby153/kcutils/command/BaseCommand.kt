@@ -2,7 +2,7 @@ package me.mrkirby153.kcutils.command
 
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.*
+import java.util.ArrayList
 
 /**
  * A base class for all commands
@@ -54,8 +54,10 @@ abstract class BaseCommand<T : JavaPlugin>(protected val instance: T, val name: 
      * Gets tab complete options for this command
      *
      * @param player    The player
-     * @parma command   The command being executed
+     * @param command   The command being executed
      * @param args      The arguments being passed
+     *
+     * @return A list of tab complete options
      */
     open fun tabComplete(player: Player, command: String, args: Array<String>): List<String> {
         return ArrayList()

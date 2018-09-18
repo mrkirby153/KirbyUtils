@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
 /**
- * Throttles execution of an event
+ * Throttles execution of an event. Subsequent calls will be dropped until the quiet period has passed.
  */
 class Throttler<T>(private val event: Consumer<T?>?) {
 

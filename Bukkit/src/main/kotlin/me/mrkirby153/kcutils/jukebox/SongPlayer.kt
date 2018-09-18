@@ -43,10 +43,20 @@ open class SongPlayer(plugin: JavaPlugin) : Runnable {
     }
 
 
+    /**
+     * Tunes a player into the jukebox. They will hear the song from the jukebox.
+     *
+     * @param player The player to tune
+     */
     fun addPlayer(player: Player) {
         this.listeningPlayers.add(player.uniqueId)
     }
 
+    /**
+     * Untunes a player from the jukebox. They will not longer hear the song from the jukebox.
+     *
+     * @param player The player to remove
+     */
     fun removePlayer(player: Player) {
         this.listeningPlayers.remove(player.uniqueId)
     }
@@ -87,7 +97,7 @@ open class SongPlayer(plugin: JavaPlugin) : Runnable {
                     }
                     // Play the tick
                     val chord = song.getTick(this.tick)
-                   playChord(chord)
+                    playChord(chord)
                     val loopDuration = System.currentTimeMillis() - startTime // The duration of the loop
                     val delayMillis = (20 / song.tempo) * 50
                     if (loopDuration < delayMillis) {
@@ -103,12 +113,24 @@ open class SongPlayer(plugin: JavaPlugin) : Runnable {
         }
     }
 
+    /**
+     * Plays a chord
+     *
+     * @param chord A list of [Noteblocks][Noteblock] to play to all listning players
+     */
     open fun playChord(chord: List<Noteblock>?) {
         this.listeningPlayers.mapNotNull { Bukkit.getPlayer(it) }.forEach { player ->
             playChordAt(chord, player)
         }
     }
 
+    /**
+     * Plays a chord at a specific location
+     *
+     * @param chord The chord to play
+     * @param player The player to play to
+     * @param location The location to play the chord at (Useful for static jukeboxes)
+     */
     @JvmOverloads
     fun playChordAt(chord: List<Noteblock>?, player: Player, location: Location = player.location) {
         if (chord == null) {

@@ -50,7 +50,7 @@ class WrappedReflectedClass(val clazz: Class<*>) {
     /**
      * Sets a field with a NMS Class
      *
-     * @param clazz The NMS class anme
+     * @param clazz The NMS class name
      * @param index The index in the class
      * @param value The value of the field
      */

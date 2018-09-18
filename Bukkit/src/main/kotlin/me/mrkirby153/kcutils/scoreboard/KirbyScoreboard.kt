@@ -7,7 +7,10 @@ import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
 import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
-import java.util.*
+import java.util.ArrayList
+import java.util.Arrays
+import java.util.HashSet
+import java.util.Random
 
 /**
  * Wrapper class for quickly creating scoreboards
@@ -205,8 +208,8 @@ open class KirbyScoreboard(displayName: String) {
             if (debug && toRemove.isNotEmpty())
                 println("[REMOVE] " + Arrays.toString(toRemove.toTypedArray()))
 
-            toRemove.forEach { scoreboardTeam?.removeEntry(it) }
-            toAdd.forEach { scoreboardTeam?.addEntry(it) }
+            toRemove.forEach { scoreboardTeam.removeEntry(it) }
+            toAdd.forEach { scoreboardTeam.addEntry(it) }
         }
         // Remove teams that no longer exist
         board.teams.forEach { team ->
@@ -225,24 +228,15 @@ open class KirbyScoreboard(displayName: String) {
      * @param displayName The display name of the objective
      * @param displaySlot The slot that the objective is displayed in
      * @param criteria    The criteria of the objective
-     * @return The Objective
+     *
+     * @return The [Objective] that was added
      */
-    fun addObjective(displayName: String, displaySlot: DisplaySlot, criteria: String): Objective {
+    @JvmOverloads
+    fun addObjective(displayName: String, displaySlot: DisplaySlot, criteria: String = "dummy"): Objective {
         val o = board.registerNewObjective("Obj-" + r.nextInt(999999), criteria)
         o.displaySlot = displaySlot
         o.displayName = displayName
         return o
-    }
-
-    /**
-     * Adds a dummy objective to the scoreboard
-     *
-     * @param displayName The display name of the objective
-     * @param displaySlot The slot the objective is displayed in
-     * @return The objective
-     */
-    fun addObjective(displayName: String, displaySlot: DisplaySlot): Objective {
-        return this.addObjective(displayName, displaySlot, "dummy")
     }
 
     /**

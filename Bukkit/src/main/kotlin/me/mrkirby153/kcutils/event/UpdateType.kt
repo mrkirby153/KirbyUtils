@@ -1,6 +1,9 @@
 package me.mrkirby153.kcutils.event
 
-enum class UpdateType private constructor(val updateTime: Int) {
+/**
+ * An update type for categorizing [UpdateEvents][UpdateEvent] fired
+ */
+enum class UpdateType(val updateTime: Int) {
 
     TICK(1),
     FAST(5),

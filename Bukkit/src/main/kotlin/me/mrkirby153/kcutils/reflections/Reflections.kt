@@ -48,6 +48,7 @@ object Reflections {
      * Gets a NMS Class wrapped in [WrappedReflectedClass] for easy reflection access
      *
      * @param name The name of the NMS class
+     *
      * @return A [WrappedReflectedClass] of the provided NMS class
      */
     @JvmStatic
@@ -59,6 +60,7 @@ object Reflections {
      * Gets the player connection
      *
      * @param player The player to get the connection for
+     *
      * @return The player connection
      */
     @JvmStatic
@@ -74,6 +76,7 @@ object Reflections {
      *
      * @param clazz The class to instantiate
      * @param params The constructor parameters
+     *
      * @return The class instance
      */
     @JvmStatic
@@ -122,6 +125,7 @@ object Reflections {
      *
      * @param nmsClass The NMS Class name to instantiate
      * @param params The constructor parameters
+     *
      * @return The class instance
      */
     @JvmStatic
@@ -161,6 +165,7 @@ object Reflections {
      * Converts a class to its primitive type, if applicable
      *
      * @param clazz The class to map to its primitive type
+     *
      * @return The primitive type of the class, if applicable, or the class passed in
      */
     @JvmStatic
@@ -180,7 +185,6 @@ object Reflections {
      */
     @Suppress("UNCHECKED_CAST")
     @JvmStatic
-    @JvmOverloads
     fun <T> invokeMethod(clazz: Class<*>, methodName: String, instance: Any?, vararg params: Any): T {
         val paramTypes = params.map { mapToPrimitive(it.javaClass) }.toTypedArray()
         val method: Method = getMethod(clazz, methodName, paramTypes)
@@ -197,7 +201,6 @@ object Reflections {
      * @param params Any method parameters
      */
     @JvmStatic
-    @JvmOverloads
     fun <T> invoke(instance: Any, method: String,
                    vararg params: Any) = invokeMethod<T>(instance.javaClass,
             method, instance, *params)
@@ -264,7 +267,7 @@ object Reflections {
      */
     @JvmStatic
     fun getEnumValue(clazz: Class<*>, value: String): Any {
-        return invokeMethod<Any>(clazz, "valueOf", null, value)
+        return invokeMethod(clazz, "valueOf", null, value)
     }
 
 

@@ -15,7 +15,7 @@ class ElementHeadedText(header: String, text: String) : ScoreboardElement {
     /**
      * The text
      */
-    private val text: ElementText = ElementText("   " + text)
+    private val text: ElementText = ElementText("   $text")
 
     override val lines: Array<String>
         get() {

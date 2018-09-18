@@ -24,6 +24,7 @@ class ItemFactory(private val material: Material) {
      * Sets the item amount
      *
      * @param amount The item amount
+     *
      * @return The factory
      */
     fun amount(amount: Int): ItemFactory {
@@ -54,6 +55,7 @@ class ItemFactory(private val material: Material) {
      * Sets the item's data
      *
      * @param data The data
+     *
      * @return The factory
      */
     fun data(data: Int): ItemFactory {
@@ -66,6 +68,7 @@ class ItemFactory(private val material: Material) {
      *
      * @param enchantment The enchantment
      * @param level       The level
+     *
      * @return The factory
      */
     fun enchantment(enchantment: Enchantment, level: Int): ItemFactory {
@@ -77,6 +80,7 @@ class ItemFactory(private val material: Material) {
      * Adds flags to an item
      *
      * @param flags The flags
+     *
      * @return The factory
      */
     fun flags(vararg flags: ItemFlag): ItemFactory {
@@ -98,6 +102,7 @@ class ItemFactory(private val material: Material) {
      * Adds lore to an item
      *
      * @param lore The lore
+     *
      * @return The factory
      */
     fun lore(vararg lore: String): ItemFactory {
@@ -111,6 +116,7 @@ class ItemFactory(private val material: Material) {
      * Sets the item's name
      *
      * @param name The name
+     *
      * @return The factory
      */
     fun name(name: String): ItemFactory {

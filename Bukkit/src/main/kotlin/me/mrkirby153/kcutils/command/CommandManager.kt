@@ -6,7 +6,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChatTabCompleteEvent
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.*
+import java.util.HashMap
 
 /**
  * A command manager for commands
@@ -81,6 +81,7 @@ class CommandManager private constructor(plugin: JavaPlugin) : Listener {
      * Finds a command by its name or alias
      *
      * @param command The command
+     *
      * @return The [Command][BaseCommand] or null if one wasn't found
      */
     private fun findCommand(command: String): BaseCommand<out JavaPlugin>? {

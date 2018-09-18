@@ -28,5 +28,6 @@ class IdGenerator(val validChars: String) {
         val LOWERCASE_ALPHA = UPPERCASE_ALPHA.toLowerCase()
         val NUMBERS = "0123456789"
         val ALPHA = UPPERCASE_ALPHA + LOWERCASE_ALPHA
+        val ALPHANUMERIC = NUMBERS + ALPHA
     }
 }
