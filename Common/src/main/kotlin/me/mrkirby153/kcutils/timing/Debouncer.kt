@@ -8,13 +8,13 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
-class Debouncer<T>(private val runnable: Consumer<T>, threadFactory: ThreadFactory? = null,
+class Debouncer<T>(private val runnable: Consumer<T?>, threadFactory: ThreadFactory? = null,
                    private val mode: Mode = Mode.TRAILING) {
 
     private val scheduler: ScheduledExecutorService
-    private val delayedMap = ConcurrentHashMap<T, Future<*>>()
+    private val delayedMap = ConcurrentHashMap<T?, Future<*>>()
 
-    private var nextRunMap = ConcurrentHashMap<T, Long>()
+    private var nextRunMap = ConcurrentHashMap<T?, Long>()
 
     init {
         if (threadFactory != null) {
@@ -31,7 +31,7 @@ class Debouncer<T>(private val runnable: Consumer<T>, threadFactory: ThreadFacto
      * @param delay The delay
      * @param unit The units for the delay
      */
-    fun debounce(key: T, delay: Long, unit: TimeUnit) {
+    fun debounce(key: T?, delay: Long, unit: TimeUnit) {
         if (mode == Mode.TRAILING) {
             val prev = delayedMap.put(key, scheduler.schedule({
                 try {

@@ -6,9 +6,9 @@ import java.util.function.Consumer
 /**
  * Throttles execution of an event
  */
-class Throttler<T>(private val event: Consumer<T>) {
+class Throttler<T>(private val event: Consumer<T?>?) {
 
-    private val executed = mutableMapOf<T, Long>()
+    private val executed = mutableMapOf<T?, Long>()
 
     /**
      * Triggers throttled execution of the event
@@ -17,7 +17,7 @@ class Throttler<T>(private val event: Consumer<T>) {
      * @param time The throttle time
      * @param unit The time units
      */
-    fun trigger(key: T, time: Long, unit: TimeUnit) {
+    fun trigger(key: T?, time: Long, unit: TimeUnit) {
         val next = executed[key]
         if (next != null) {
             if (System.currentTimeMillis() < next) {
@@ -26,7 +26,7 @@ class Throttler<T>(private val event: Consumer<T>) {
         }
         val runNext = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(time, unit)
         executed[key] = runNext
-        event.accept(key)
+        event?.accept(key)
     }
 
     /**
