@@ -43,4 +43,16 @@ class Throttler<T>(private val event: Consumer<T?>?) {
         }
         return false
     }
+
+    /**
+     * Returns the number of milliseconds left in the provided key's quiet period
+     *
+     * @param key The key
+     *
+     * @return The amount of time (in milliseconds) left in the key's quiet period
+     */
+    fun getTimeRemaining(key: T): Long {
+        val time = executed[key] ?: 0
+        return time - System.currentTimeMillis()
+    }
 }
