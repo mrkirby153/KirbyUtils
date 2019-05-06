@@ -10,7 +10,7 @@ buildscript {
 }
 allprojects {
     group = 'me.mrkirby153'
-    version = '2.7-SNAPSHOT'
+    version = '3.0-SNAPSHOT'
 }
 
 subprojects {
