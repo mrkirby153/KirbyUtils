@@ -123,7 +123,7 @@ class Structure(private val yaml: YamlConfiguration) : Runnable {
         for (i in 1..count) {
             val section = yaml.getConfigurationSection("blocks.$i") ?: continue
 
-            val material = section.getString("material").toUpperCase()
+            val material = section.getString("material")!!.toUpperCase()
             if (!Material.values().map { it.toString() }.contains(material))
                 continue
 

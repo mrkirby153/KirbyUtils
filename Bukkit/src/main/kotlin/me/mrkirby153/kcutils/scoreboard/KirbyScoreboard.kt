@@ -25,7 +25,7 @@ open class KirbyScoreboard(displayName: String) {
      *
      * @return The scoreboard
      */
-    val board: Scoreboard = Bukkit.getScoreboardManager().newScoreboard
+    val board: Scoreboard = Bukkit.getScoreboardManager()!!.newScoreboard
     private val sideObjective = addObjective(displayName, DisplaySlot.SIDEBAR)
     private val scoreboardElements = ArrayList<ScoreboardElement>()
 
@@ -119,7 +119,7 @@ open class KirbyScoreboard(displayName: String) {
         }
         for (i in toRemove) {
             if (current[i] != null) {
-                resetScore(current[i])
+                resetScore(current[i]!!)
                 current[i] = null
             }
         }
@@ -171,7 +171,7 @@ open class KirbyScoreboard(displayName: String) {
      *
      * @param line The line to remove
      */
-    private fun resetScore(line: String?) {
+    private fun resetScore(line: String) {
         board.resetScores(line)
     }
 
@@ -198,7 +198,7 @@ open class KirbyScoreboard(displayName: String) {
             scoreboardTeam.setAllowFriendlyFire(t.friendlyFire)
 
             // Update all the players on the team
-            val playersOnTeam = t.players.map { Bukkit.getPlayer(it) }.filter { it != null }.map { it.name }
+            val playersOnTeam = t.players.mapNotNull { Bukkit.getPlayer(it) }.map { it.name }
             val playersOnScoreboardTeam = scoreboardTeam.entries
 
             val toAdd = playersOnTeam.filter { p -> !playersOnScoreboardTeam.contains(p) }

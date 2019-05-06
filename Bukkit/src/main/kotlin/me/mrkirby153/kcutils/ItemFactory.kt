@@ -2,17 +2,18 @@ package me.mrkirby153.kcutils
 
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.enchantments.EnchantmentTarget
 import org.bukkit.enchantments.EnchantmentWrapper
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
 
 /**
  * Utility class for creating items
  */
 class ItemFactory(private val material: Material) {
-    private var data: Short = 0
+    private var damage: Int = 0
     private var name: String? = null
     private var amount: Int = 1
     private var unbreakable: Boolean = false
@@ -38,10 +39,14 @@ class ItemFactory(private val material: Material) {
      * @return An [ItemStack]
      */
     fun construct(): ItemStack {
-        val stack = ItemStack(material, amount, data)
-        val meta = stack.itemMeta
-        if (name != null)
-            meta.displayName = ChatColor.RESET.toString() + name!!
+        val stack = ItemStack(material, amount)
+        val meta = stack.itemMeta!!
+        if (name != null) {
+            meta.setDisplayName(ChatColor.RESET.toString() + name!!)
+        }
+        if(meta is Damageable) {
+            meta.damage = this.damage
+        }
         meta.lore = lore
         meta.isUnbreakable = unbreakable
         meta.addItemFlags(*flags.toTypedArray())
@@ -52,14 +57,14 @@ class ItemFactory(private val material: Material) {
     }
 
     /**
-     * Sets the item's data
+     * Sets the item's damage
      *
-     * @param data The data
+     * @param damage The damage
      *
      * @return The factory
      */
-    fun data(data: Int): ItemFactory {
-        this.data = data.toShort()
+    fun damage(damage: Int): ItemFactory {
+        this.damage = damage
         return this
     }
 
@@ -137,7 +142,7 @@ class ItemFactory(private val material: Material) {
     /**
      * An enchantment for making an item glow
      */
-    class GlowEnchantment : EnchantmentWrapper(120) {
+    class GlowEnchantment : EnchantmentWrapper("glow") {
         init {
             register()
         }
@@ -148,10 +153,6 @@ class ItemFactory(private val material: Material) {
 
         override fun conflictsWith(other: Enchantment): Boolean {
             return false
-        }
-
-        override fun getItemTarget(): EnchantmentTarget? {
-            return null
         }
 
         override fun getMaxLevel(): Int {
@@ -174,7 +175,7 @@ class ItemFactory(private val material: Material) {
                 f.isAccessible = true
                 val previous = f.getBoolean(null)
                 f.set(null, true)
-                if (Enchantment.getByName("NullEnchantment") == null)
+                if (Enchantment.getByKey(NamespacedKey.minecraft("glow")) == null)
                     Enchantment.registerEnchantment(this)
 
                 f.setBoolean(null, previous)

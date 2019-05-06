@@ -52,13 +52,13 @@ abstract class Inventory<T : JavaPlugin>(protected var plugin: T, protected var 
 
     @EventHandler(priority = EventPriority.LOWEST)
     fun onInventoryClick(event: InventoryClickEvent) {
+        val clickedInventory = event.clickedInventory ?: return
+        val currentItem = event.currentItem ?: return
         if (event.whoClicked !== player)
             return
-        if (event.clickedInventory == null || event.clickedInventory.type != InventoryType.PLAYER)
+        if (clickedInventory.type != InventoryType.PLAYER)
             return
-        if (event.currentItem == null)
-            return
-        val action = getAction(event.currentItem)
+        val action = getAction(currentItem)
         action?.accept(event.whoClicked as Player, event.click)
         event.isCancelled = true
     }
@@ -88,10 +88,11 @@ abstract class Inventory<T : JavaPlugin>(protected var plugin: T, protected var 
                 ClickType.RIGHT
             }
         }
-        if (clickType == null || event.item == null)
+        if (clickType == null)
             return
+        val item = event.item ?: return
         event.isCancelled = true
-        val action = getAction(event.item)
+        val action = getAction(item)
         action?.accept(event.player, clickType)
     }
 

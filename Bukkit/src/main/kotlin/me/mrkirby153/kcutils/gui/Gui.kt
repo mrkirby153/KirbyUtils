@@ -13,10 +13,9 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.HashMap
 import java.util.function.BiConsumer
 import java.util.function.Consumer
-import kotlin.collections.ArrayList
 
 /**
  * An abstract class of a gui
@@ -115,7 +114,7 @@ abstract class Gui<T : JavaPlugin>(protected var plugin: T, rows: Int, title: St
             return
         event.isCancelled = true
         val slot = event.slot
-        val `is` = event.view.getItem(event.rawSlot)
+        val `is` = event.view.getItem(event.rawSlot) ?: return
         if (`is`.type == Material.AIR)
             actions.remove(slot)
         val consumer = getAction(slot)

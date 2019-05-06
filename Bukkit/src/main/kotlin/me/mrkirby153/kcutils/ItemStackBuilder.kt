@@ -49,7 +49,7 @@ class ItemStackBuilder(var material: Material, var data: Int = 0) {
      * @return The built ItemStack
      */
     fun build(): ItemStack {
-        val itemFactory = ItemFactory(this.material).data(this.data).amount(this.amount)
+        val itemFactory = ItemFactory(this.material).damage(this.data).amount(this.amount)
 
         if (this.unbreakable)
             itemFactory.unbreakable()

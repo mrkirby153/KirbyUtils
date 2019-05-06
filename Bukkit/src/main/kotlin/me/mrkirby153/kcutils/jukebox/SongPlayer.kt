@@ -138,16 +138,16 @@ open class SongPlayer(plugin: JavaPlugin) : Runnable {
         }
         chord.forEach { note ->
             val sound = when (note.instrument) {
-                Noteblock.Instrument.PIANO -> Sound.BLOCK_NOTE_HARP
-                Noteblock.Instrument.DOUBLE_BASS -> Sound.BLOCK_NOTE_BASS
-                Noteblock.Instrument.BASS_DRUM -> Sound.BLOCK_NOTE_BASEDRUM
-                Noteblock.Instrument.SNARE_DRUM -> Sound.BLOCK_NOTE_SNARE
-                Noteblock.Instrument.CLICK -> Sound.BLOCK_NOTE_HAT
-                Noteblock.Instrument.GUITAR -> Sound.BLOCK_NOTE_GUITAR
-                Noteblock.Instrument.FLUTE -> Sound.BLOCK_NOTE_FLUTE
-                Noteblock.Instrument.BELL -> Sound.BLOCK_NOTE_BELL
-                Noteblock.Instrument.CHIME -> Sound.BLOCK_NOTE_CHIME
-                Noteblock.Instrument.XYLOPHONE -> Sound.BLOCK_NOTE_XYLOPHONE
+                Noteblock.Instrument.PIANO -> Sound.BLOCK_NOTE_BLOCK_HARP
+                Noteblock.Instrument.DOUBLE_BASS -> Sound.BLOCK_NOTE_BLOCK_BASS
+                Noteblock.Instrument.BASS_DRUM -> Sound.BLOCK_NOTE_BLOCK_BASEDRUM
+                Noteblock.Instrument.SNARE_DRUM -> Sound.BLOCK_NOTE_BLOCK_SNARE
+                Noteblock.Instrument.CLICK -> Sound.BLOCK_NOTE_BLOCK_HAT
+                Noteblock.Instrument.GUITAR -> Sound.BLOCK_NOTE_BLOCK_GUITAR
+                Noteblock.Instrument.FLUTE -> Sound.BLOCK_NOTE_BLOCK_FLUTE
+                Noteblock.Instrument.BELL -> Sound.BLOCK_NOTE_BLOCK_BELL
+                Noteblock.Instrument.CHIME -> Sound.BLOCK_NOTE_BLOCK_CHIME
+                Noteblock.Instrument.XYLOPHONE -> Sound.BLOCK_NOTE_BLOCK_XYLOPHONE
             }
             player.playSound(location, sound, SoundCategory.RECORDS, this.volume,
                     note.pitch.pitch)

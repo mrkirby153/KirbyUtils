@@ -8,7 +8,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.*
+import java.util.HashMap
+import java.util.UUID
 
 /**
  * A class for manipulating boss bars
@@ -94,9 +95,9 @@ class BossBar(plugin: JavaPlugin) : Module<JavaPlugin>("bossbar", plugin), Liste
         if (bar == null) {
             bar = Bukkit.createBossBar(text, BarColor.PINK, BarStyle.SOLID)
             playerBossBars.put(player.uniqueId, bar)
-            bar!!.addPlayer(player)
+            bar.addPlayer(player)
         }
-        bar.title = text
+        bar.setTitle(text)
     }
 
     override fun init() {

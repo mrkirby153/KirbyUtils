@@ -60,13 +60,13 @@ class CooldownManager(plugin: JavaPlugin) : Module<JavaPlugin>("cooldown", plugi
             this.protocolLib.sendActionBar(it, component)
         }
         notifiable.forEach { cooldown ->
-            cooldown.getPendingNotifcations().map { Bukkit.getPlayer(it) }.forEach { it ->
+            cooldown.getPendingNotifcations().mapNotNull { Bukkit.getPlayer(it) }.forEach { it ->
                 if (cooldown.getPendingNotifcations().contains(
                         it.uniqueId) && cooldown.notify && cooldown.check(it.uniqueId)) {
                     cooldown.removeNotifcation(it.uniqueId)
                     it.spigot().sendMessage(
                             Chat.message("Cooldown", "{name} recharged!", "{name}", cooldown.name))
-                    it.playSound(it.location, Sound.BLOCK_NOTE_PLING, SoundCategory.MASTER, 1F, 2F)
+                    it.playSound(it.location, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1F, 2F)
                     this.protocolLib.sendActionBar(it, component(cooldown.name) {
                         color = ChatColor.AQUA
                         bold = true

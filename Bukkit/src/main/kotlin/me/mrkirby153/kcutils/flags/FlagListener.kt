@@ -4,11 +4,33 @@ import org.bukkit.World
 import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.block.*
-import org.bukkit.event.entity.*
-import org.bukkit.event.player.*
+import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockBurnEvent
+import org.bukkit.event.block.BlockDispenseEvent
+import org.bukkit.event.block.BlockExplodeEvent
+import org.bukkit.event.block.BlockGrowEvent
+import org.bukkit.event.block.BlockPistonExtendEvent
+import org.bukkit.event.block.BlockPistonRetractEvent
+import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.block.BlockRedstoneEvent
+import org.bukkit.event.block.LeavesDecayEvent
+import org.bukkit.event.entity.CreatureSpawnEvent
+import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityExplodeEvent
+import org.bukkit.event.entity.EntityRegainHealthEvent
+import org.bukkit.event.entity.FoodLevelChangeEvent
+import org.bukkit.event.entity.SheepRegrowWoolEvent
+import org.bukkit.event.player.PlayerBucketEmptyEvent
+import org.bukkit.event.player.PlayerBucketFillEvent
+import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerPickupItemEvent
+import org.bukkit.event.player.PlayerShearEntityEvent
 import org.bukkit.event.weather.WeatherChangeEvent
-import java.util.*
+import java.util.ArrayList
+import java.util.HashSet
 
 class FlagListener(private val module: FlagModule) : Listener {
 
@@ -149,8 +171,9 @@ class FlagListener(private val module: FlagModule) : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        if (event.action == Action.RIGHT_CLICK_BLOCK) {
-            event.isCancelled = module.shouldCancel(event.clickedBlock.world, WorldFlags.BLOCK_INTERACT)
+        if (event.action == Action.RIGHT_CLICK_BLOCK ) {
+            val clicked = event.clickedBlock ?: return
+            event.isCancelled = module.shouldCancel(clicked.world, WorldFlags.BLOCK_INTERACT)
         }
     }
 

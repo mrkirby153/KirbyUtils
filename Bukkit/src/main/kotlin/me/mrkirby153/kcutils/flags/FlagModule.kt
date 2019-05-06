@@ -8,7 +8,8 @@ import org.bukkit.Sound
 import org.bukkit.SoundCategory
 import org.bukkit.World
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.*
+import java.util.Arrays
+import java.util.HashMap
 
 /**
  * A module for handling various flags on the world
@@ -90,7 +91,7 @@ class FlagModule(plugin: JavaPlugin) : Module<JavaPlugin>("WorldFlags", plugin) 
                 val s = Chat.formattedChat(if (state) "true" else "false", if (state) ChatColor.GREEN else ChatColor.RED, Chat.Style.BOLD)
                 component.addExtra(s)
                 player.spigot().sendMessage(component)
-                player.playSound(player.location, Sound.BLOCK_NOTE_PLING, SoundCategory.MASTER, 1f, 1f)
+                player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1f)
             }
     }
 

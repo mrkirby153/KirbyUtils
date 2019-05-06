@@ -7,7 +7,7 @@ import org.bukkit.material.MaterialData
 
 class DirectionalData : DataAdapter<Directional>() {
     override fun deserialize(materialData: Directional, config: ConfigurationSection) {
-        materialData.setFacingDirection(BlockFace.valueOf(config.getString("facing", "NORTH")))
+        materialData.setFacingDirection(BlockFace.valueOf(config.getString("facing", "NORTH")!!))
     }
 
     override fun serialize(materialData: Directional, config: ConfigurationSection) {
