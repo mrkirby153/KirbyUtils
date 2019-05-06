@@ -1,11 +1,20 @@
 package me.mrkirby153.kcutils.test
 
 import me.mrkirby153.kcutils.scoreboard.KirbyScoreboard
+import me.mrkirby153.kcutils.scoreboard.ScoreboardTeam
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.util.UUID
 
 class TestScoreboard(val player: Player) : KirbyScoreboard("Test Scoreboard") {
+
+    val team: ScoreboardTeam = ScoreboardTeam("Test Team", ChatColor.AQUA)
+
+    init {
+        team.prefix = "Testing"
+        team.showPrefix = true
+        team.addPlayer(player)
+    }
 
     fun update() {
         this.reset()
@@ -18,6 +27,10 @@ class TestScoreboard(val player: Player) : KirbyScoreboard("Test Scoreboard") {
             player.scoreboard = board
         }
         this.draw()
+    }
+
+    override fun getTeams(): Set<ScoreboardTeam> {
+        return mutableSetOf(team)
     }
 
     companion object {

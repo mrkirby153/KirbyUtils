@@ -190,12 +190,13 @@ open class KirbyScoreboard(displayName: String) {
                 scoreboardTeam = board.registerNewTeam(t.filteredName)
             var prefix = t.prefixColor.toString() + ""
             if (t.showPrefix && t.prefix != null) {
-                prefix += t.prefixColor.toString() + String.format(t.prefixFormat, t.prefix!!.toUpperCase()) + t.color
+                prefix += t.prefixColor.toString() + String.format(t.prefixFormat, t.prefix!!.toUpperCase())+ " "
             }
-            scoreboardTeam!!.prefix = prefix
+            scoreboardTeam.prefix = prefix
             scoreboardTeam.suffix = ChatColor.RESET.toString() + ""
             scoreboardTeam.setCanSeeFriendlyInvisibles(t.seeInvisible)
             scoreboardTeam.setAllowFriendlyFire(t.friendlyFire)
+            scoreboardTeam.color = t.color
 
             // Update all the players on the team
             val playersOnTeam = t.players.mapNotNull { Bukkit.getPlayer(it) }.map { it.name }

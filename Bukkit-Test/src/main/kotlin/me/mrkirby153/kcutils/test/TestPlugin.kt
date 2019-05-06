@@ -38,7 +38,7 @@ class TestPlugin : JavaPlugin(), Listener {
     @EventHandler
     fun onJoin(event: PlayerLoginEvent) {
         this.server.scheduler.scheduleSyncDelayedTask(this) {
-            TestScoreboard.setScoreboard(event.player)
+                        TestScoreboard.setScoreboard(event.player)
         }
     }
 
