@@ -19,21 +19,21 @@ object Time {
 
     init {
         timeMap.clear()
-        timeMap["ms"] = 1
-        timeMap["s"] = 1000
-        timeMap["m"] = 60000
-        timeMap["h"] = 3600000
-        timeMap["d"] = 86400000
-        timeMap["w"] = 2073600000
-        timeMap["y"] = 31540000000
+        timeMap["ms"] = TimeUnit.MILLISECONDS.ms
+        timeMap["s"] = TimeUnit.SECONDS.ms
+        timeMap["m"] = TimeUnit.MINUTES.ms
+        timeMap["h"] = TimeUnit.HOURS.ms
+        timeMap["d"] = TimeUnit.DAYS.ms
+        timeMap["w"] = TimeUnit.WEEKS.ms
+        timeMap["y"] = TimeUnit.YEARS.ms
 
-        timeMap["milliseconds"] = 1
-        timeMap["seconds"] = 1000
-        timeMap["minutes"] = 60000
-        timeMap["hours"] = 3600000
-        timeMap["days"] = 86400000
-        timeMap["weeks"] = 604800000
-        timeMap["years"] = 31540000000
+        timeMap["milliseconds"] = TimeUnit.MILLISECONDS.ms
+        timeMap["seconds"] = TimeUnit.SECONDS.ms
+        timeMap["minutes"] = TimeUnit.MINUTES.ms
+        timeMap["hours"] = TimeUnit.HOURS.ms
+        timeMap["days"] = TimeUnit.DAYS.ms
+        timeMap["weeks"] = TimeUnit.WEEKS.ms
+        timeMap["years"] = TimeUnit.YEARS.ms
     }
 
     /**
@@ -44,6 +44,7 @@ object Time {
      * @param type The time unit tot convert to
      * @return The converted time
      */
+    @JvmStatic
     fun convert(trim: Int, time: Long, type: TimeUnit): Double {
         val t = if (type == TimeUnit.FIT) fitTime(time, TimeUnit.SECONDS) else type
         return trim(trim, time / t.ms.toDouble())
@@ -54,6 +55,7 @@ object Time {
      *
      * @return The date
      */
+    @JvmStatic
     fun date(): String {
         return SimpleDateFormat(DATE_FORMAT_DAY).format(Calendar.getInstance().time)
     }
@@ -69,6 +71,7 @@ object Time {
      * @return A string in human-readable format
      */
     @JvmOverloads
+    @JvmStatic
     fun format(trim: Int, time: Long, type: TimeUnit = TimeUnit.FIT,
                smallest: TimeUnit = TimeUnit.MILLISECONDS): String {
         var type = type
@@ -99,6 +102,7 @@ object Time {
      * @return A string in human-readable format
      */
     @JvmOverloads
+    @JvmStatic
     fun formatLong(time: Long, smallest: TimeUnit = TimeUnit.SECONDS,
                    short: Boolean = false): String {
         val string = buildString {
@@ -147,6 +151,7 @@ object Time {
     /**
      * Calculates the largest time unit of the given time
      */
+    @JvmStatic
     private fun fitTime(time: Long, smallest: TimeUnit): TimeUnit {
         var determined: TimeUnit = smallest
         val values = TimeUnit.values().drop(1)
@@ -172,6 +177,7 @@ object Time {
      *
      * @return The date
      */
+    @JvmStatic
     fun now(): String {
         return SimpleDateFormat(DATE_FORMAT_NOW).format(Calendar.getInstance().time)
     }
@@ -184,6 +190,7 @@ object Time {
      *
      * @return A trimmed double
      */
+    @JvmStatic
     fun trim(degree: Int, d: Double): Double {
         if (degree == 0) {
             return Math.round(d).toDouble()
@@ -204,6 +211,7 @@ object Time {
      *
      * @return The time in milliseconds
      */
+    @JvmStatic
     fun parse(time: String): Long {
         val timePattern = Pattern.compile("(\\d+\\s?)(\\D+)")
         val timeMatcher = timePattern.matcher(time)
@@ -226,8 +234,8 @@ object Time {
     enum class TimeUnit(val ms: Long, val pluralName: String, val singleName: String,
                         val shortName: String) {
         FIT(-1, "FIT", "FIT", "FIT"),
-        YEARS(31540000000, "Years", "Year", "y"),
-        WEEKS(2073600000, "Weeks", "Week", "w"),
+        YEARS(31536000000, "Years", "Year", "y"),
+        WEEKS(604800000, "Weeks", "Week", "w"),
         DAYS(86400000, "Days", "Day", "d"),
         HOURS(3600000, "Hours", "Hour", "h"),
         MINUTES(60000, "Minutes", "Minute", "m"),
