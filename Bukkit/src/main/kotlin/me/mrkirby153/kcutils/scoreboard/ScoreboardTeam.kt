@@ -57,7 +57,6 @@ open class ScoreboardTeam(val teamName: String, var color: ChatColor) {
     override fun hashCode(): Int {
         var result = teamName.hashCode()
         result = 31 * result + color.hashCode()
-        result = 31 * result + players.hashCode()
         result = 31 * result + prefixColor.hashCode()
         result = 31 * result + showPrefix.hashCode()
         result = 31 * result + (prefix?.hashCode() ?: 0)
