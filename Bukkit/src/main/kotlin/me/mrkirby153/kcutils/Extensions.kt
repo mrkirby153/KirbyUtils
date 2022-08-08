@@ -104,7 +104,7 @@ fun Block.safeToTeleport(): Boolean {
     if (this.isLiquid || this.getRelative(org.bukkit.block.BlockFace.DOWN).isLiquid)
         return false
     if (this.type != Material.AIR || this.getRelative(
-            org.bukkit.block.BlockFace.UP) != Material.AIR)
+            org.bukkit.block.BlockFace.UP).type != Material.AIR)
         return false
     return true
 }

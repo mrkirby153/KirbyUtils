@@ -174,7 +174,7 @@ class ArgumentParser {
             arguments.forEach {
                 opts[it.key + " " + it.aliases.joinToString(", ")] = it.help ?: ""
             }
-            val max = (opts.keys.map { it.length }.max() ?: 0) + 5
+            val max = opts.keys.maxOf { it.length } + 5
             opts.forEach { (opt, help) ->
                 append(" ")
                 append(opt)
