@@ -38,8 +38,8 @@ shadowJar {
         include(project(':KirbyUtils-Common'))
         include(dependency('co.aikar:acf-core'))
     }
-    relocate 'co.aikar.commands', 'me.mrkirby153.thirdparty.acf'
-    relocate 'co.aikar.locales', 'me.mrkirby153.thirdparty.locales'
+    relocate 'co.aikar.commands', 'me.mrkirby153.kcutils.thirdparty.acf'
+    relocate 'co.aikar.locales', 'me.mrkirby153.kcutils.thirdparty.locales'
 }
 
 tasks.build.dependsOn shadowJar
