@@ -2,13 +2,14 @@ package me.mrkirby153.kcutils.test
 
 import me.mrkirby153.kcutils.scoreboard.KirbyScoreboard
 import me.mrkirby153.kcutils.scoreboard.ScoreboardTeam
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.util.UUID
 
 class TestScoreboard(val player: Player) : KirbyScoreboard("Test Scoreboard") {
 
-    val team: ScoreboardTeam = ScoreboardTeam("Test Team", ChatColor.AQUA)
+    val team: ScoreboardTeam = ScoreboardTeam("Test Team", NamedTextColor.AQUA)
 
     init {
         team.prefix = "Testing"

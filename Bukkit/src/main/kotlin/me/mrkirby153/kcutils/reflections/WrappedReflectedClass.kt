@@ -74,7 +74,7 @@ class WrappedReflectedClass(val clazz: Class<*>) {
      * Constructs an instance of the class
      */
     fun get(): Any {
-        val instance = clazz.newInstance()
+        val instance = clazz.getDeclaredConstructor().newInstance()
         fieldValues.forEach { field, value ->
             field.isAccessible = true
             field.set(instance, value)

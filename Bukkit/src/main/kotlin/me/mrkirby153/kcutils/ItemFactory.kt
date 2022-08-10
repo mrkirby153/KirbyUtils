@@ -1,5 +1,6 @@
 package me.mrkirby153.kcutils
 
+import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -14,10 +15,10 @@ import org.bukkit.inventory.meta.Damageable
  */
 class ItemFactory(private val material: Material) {
     private var damage: Int = 0
-    private var name: String? = null
+    private var name: Component? = null
     private var amount: Int = 1
     private var unbreakable: Boolean = false
-    private val lore: MutableList<String> = mutableListOf()
+    private val lore: MutableList<Component> = mutableListOf()
     private val flags: MutableList<ItemFlag> = mutableListOf()
     private val enchantments: MutableMap<Enchantment, Int> = mutableMapOf()
 
@@ -42,15 +43,15 @@ class ItemFactory(private val material: Material) {
         val stack = ItemStack(material, amount)
         val meta = stack.itemMeta!!
         if (name != null) {
-            meta.setDisplayName(ChatColor.RESET.toString() + name!!)
+            meta.displayName(name)
         }
-        if(meta is Damageable) {
+        if (meta is Damageable) {
             meta.damage = this.damage
         }
-        meta.lore = lore
+        meta.lore()
         meta.isUnbreakable = unbreakable
         meta.addItemFlags(*flags.toTypedArray())
-        enchantments.forEach { e, l -> meta.addEnchant(e, l, true) }
+        enchantments.forEach { (e, l) -> meta.addEnchant(e, l, true) }
         stack.itemMeta = meta
 
         return stack
@@ -77,7 +78,7 @@ class ItemFactory(private val material: Material) {
      * @return The factory
      */
     fun enchantment(enchantment: Enchantment, level: Int): ItemFactory {
-        this.enchantments.put(enchantment, level)
+        this.enchantments[enchantment] = level
         return this
     }
 
@@ -112,7 +113,7 @@ class ItemFactory(private val material: Material) {
      */
     fun lore(vararg lore: String): ItemFactory {
         for (l in lore) {
-            this.lore.add(ChatColor.RESET.toString() + l)
+            this.lore.add(Component.text(l))
         }
         return this
     }
@@ -125,6 +126,11 @@ class ItemFactory(private val material: Material) {
      * @return The factory
      */
     fun name(name: String): ItemFactory {
+        this.name = Component.text(name)
+        return this
+    }
+
+    fun name(name: Component): ItemFactory {
         this.name = name
         return this
     }

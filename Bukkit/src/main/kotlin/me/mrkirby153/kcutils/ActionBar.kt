@@ -1,6 +1,7 @@
 package me.mrkirby153.kcutils
 
 import me.mrkirby153.kcutils.protocollib.ProtocolLib
+import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
@@ -18,9 +19,7 @@ import java.util.*
  */
 class ActionBar(plugin: JavaPlugin) : Module<JavaPlugin>("actionbar", plugin), Listener, Runnable {
 
-    private val protocolLib: ProtocolLib = ProtocolLib(plugin)
-
-    private val actionBars = HashMap<UUID, BaseComponent>()
+    private val actionBars = HashMap<UUID, Component>()
 
     /**
      * Clears a player's action bar
@@ -28,10 +27,8 @@ class ActionBar(plugin: JavaPlugin) : Module<JavaPlugin>("actionbar", plugin), L
      * @param player The player to clear the action bar for
      */
     fun clear(player: Player) {
-        if (protocolLib.isErrored)
-            return
         actionBars.remove(player.uniqueId)
-        protocolLib.sendActionBar(player, TextComponent(""))
+        player.sendActionBar(Component.empty())
     }
 
     @EventHandler
@@ -40,15 +37,13 @@ class ActionBar(plugin: JavaPlugin) : Module<JavaPlugin>("actionbar", plugin), L
     }
 
     override fun run() {
-        if (protocolLib.isErrored)
-            return
         val toDelete = ArrayList<UUID>()
-        actionBars.forEach { uuid, bar ->
+        actionBars.forEach { (uuid, bar) ->
             val player = Bukkit.getPlayer(uuid)
             if (player == null) {
                 toDelete.add(uuid)
             } else {
-                protocolLib.sendActionBar(player, bar)
+                player.sendActionBar(bar)
             }
         }
         actionBars.entries.removeIf { entry -> toDelete.contains(entry.key) }
@@ -60,15 +55,11 @@ class ActionBar(plugin: JavaPlugin) : Module<JavaPlugin>("actionbar", plugin), L
      * @param player The player
      * @param text   The action bar to set
      */
-    operator fun set(player: Player, text: BaseComponent) {
-        if (protocolLib.isErrored)
-            return
-        actionBars.put(player.uniqueId, text)
-        protocolLib.sendActionBar(player, text)
+    operator fun set(player: Player, text: Component) {
+        actionBars[player.uniqueId] = text
     }
 
     override fun init() {
-        protocolLib.init()
         registerListener(this)
         scheduleRepeating(0L, 5L, this)
     }

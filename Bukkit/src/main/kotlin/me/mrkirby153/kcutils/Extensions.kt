@@ -1,17 +1,9 @@
 package me.mrkirby153.kcutils
 
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.BaseComponent
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.entity.Player
-
-/**
- * Sends a BaseComponent to the given player
- */
-fun Player.sendMessage(component: BaseComponent) = this.spigot().sendMessage(component)
 
 /**
  * Creates a new [ItemStackBuilder]
@@ -21,8 +13,10 @@ fun Player.sendMessage(component: BaseComponent) = this.spigot().sendMessage(com
  *
  * @return An [ItemStackBuilder]
  */
-fun itemStack(material: Material, data: Int = 0): ItemStackBuilder = ItemStackBuilder(material,
-        data)
+fun itemStack(material: Material, data: Int = 0): ItemStackBuilder = ItemStackBuilder(
+    material,
+    data
+)
 
 /**
  * Creates a new [ItemStackBuilder]
@@ -45,9 +39,13 @@ inline fun itemStack(material: Material, value: ItemStackBuilder.() -> Unit): It
  *
  * @return An [ItemStackBuilder]
  */
-inline fun itemStack(material: Material, data: Int,
-                     value: ItemStackBuilder.() -> Unit): ItemStackBuilder = itemStack(material,
-        data).apply(value)
+inline fun itemStack(
+    material: Material, data: Int,
+    value: ItemStackBuilder.() -> Unit
+): ItemStackBuilder = itemStack(
+    material,
+    data
+).apply(value)
 
 /**
  * Checks if a block is safe for players to teleport to
@@ -60,7 +58,9 @@ fun Block.safeToTeleport(): Boolean {
     if (this.isLiquid || this.getRelative(org.bukkit.block.BlockFace.DOWN).isLiquid)
         return false
     if (this.type != Material.AIR || this.getRelative(
-            org.bukkit.block.BlockFace.UP).type != Material.AIR)
+            org.bukkit.block.BlockFace.UP
+        ).type != Material.AIR
+    )
         return false
     return true
 }
@@ -75,6 +75,7 @@ fun Block.safeToTeleport(): Boolean {
 fun YamlConfiguration.getOrCreateSection(section: String): ConfigurationSection {
     return this.getConfigurationSection(section) ?: this.createSection(section)
 }
+
 /**
  * Gets or creates the given configuration section
  *

@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.Locale
+import kotlin.system.measureTimeMillis
 
 /**
  * A class for creating "sub-plugins" in one main plugin
@@ -32,7 +33,7 @@ abstract class Module<out T : JavaPlugin>(private val name: String, protected va
     fun load() {
         if (loaded)
             throw IllegalStateException("Attempting to load an already loaded module!")
-        val loadTime = timeMS {
+        val loadTime = measureTimeMillis {
             try {
                 init()
             } catch (e: Exception) {
@@ -51,7 +52,7 @@ abstract class Module<out T : JavaPlugin>(private val name: String, protected va
     fun unload() {
         if (!loaded)
             throw IllegalStateException("Attempting to unload an already unloaded module!")
-        val unloadTime = timeMS {
+        val unloadTime = measureTimeMillis {
             try {
                 disable()
             } catch (e: Exception) {
