@@ -3,6 +3,7 @@ package me.mrkirby153.kcutils
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.Locale
 
 /**
  * A class for creating "sub-plugins" in one main plugin
@@ -84,7 +85,7 @@ abstract class Module<out T : JavaPlugin>(private val name: String, protected va
      * @param msg The message to log
      */
     fun log(msg: Any) {
-        plugin.logger.info(String.format("[%s] %s", name.toUpperCase(), msg))
+        plugin.logger.info(String.format("[%s] %s", name.uppercase(), msg))
     }
 
     /**

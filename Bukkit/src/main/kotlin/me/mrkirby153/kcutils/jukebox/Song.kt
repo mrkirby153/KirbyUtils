@@ -101,9 +101,9 @@ class Song(val file: File) {
     fun dumpNotes() {
         this.notes.forEach { tick, notes ->
             println(buildString {
-                appendln("Tick $tick")
+                appendLine("Tick $tick")
                 notes.forEach { note ->
-                    appendln("\t - $note")
+                    appendLine("\t - $note")
                 }
             })
         }

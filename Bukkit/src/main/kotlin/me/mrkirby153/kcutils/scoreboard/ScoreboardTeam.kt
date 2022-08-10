@@ -1,5 +1,7 @@
 package me.mrkirby153.kcutils.scoreboard
 
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.util.UUID
@@ -10,7 +12,7 @@ import java.util.UUID
  * @param teamName  The name of the team
  * @param color     The color of the team
  */
-open class ScoreboardTeam(val teamName: String, var color: ChatColor) {
+open class ScoreboardTeam(val teamName: String, var color: NamedTextColor) {
 
     /**
      * A list of players on the scoreboard

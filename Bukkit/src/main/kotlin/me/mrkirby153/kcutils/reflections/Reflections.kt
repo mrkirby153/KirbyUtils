@@ -16,13 +16,13 @@ object Reflections {
 
     init {
         primitiveTypeMap[java.lang.Boolean::class.java] = java.lang.Boolean.TYPE
-        primitiveTypeMap[java.lang.Character::class.java] = java.lang.Character.TYPE
+        primitiveTypeMap[java.lang.Character::class.java] = Character.TYPE
         primitiveTypeMap[java.lang.Byte::class.java] = java.lang.Byte.TYPE
         primitiveTypeMap[java.lang.Short::class.java] = java.lang.Short.TYPE
-        primitiveTypeMap[java.lang.Integer::class.java] = java.lang.Integer.TYPE
+        primitiveTypeMap[java.lang.Integer::class.java] = Integer.TYPE
         primitiveTypeMap[java.lang.Long::class.java] = java.lang.Long.TYPE
         primitiveTypeMap[java.lang.Double::class.java] = java.lang.Double.TYPE
-        primitiveTypeMap[java.lang.Void::class.java] = java.lang.Void.TYPE
+        primitiveTypeMap[java.lang.Void::class.java] = Void.TYPE
         primitiveTypeMap[java.lang.Float::class.java] = java.lang.Float.TYPE
     }
 

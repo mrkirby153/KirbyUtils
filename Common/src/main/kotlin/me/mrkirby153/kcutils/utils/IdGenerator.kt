@@ -1,5 +1,6 @@
 package me.mrkirby153.kcutils.utils
 
+import java.util.Locale
 import java.util.Random
 
 /**
@@ -25,7 +26,7 @@ class IdGenerator(val validChars: String) {
 
     companion object {
         val UPPERCASE_ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        val LOWERCASE_ALPHA = UPPERCASE_ALPHA.toLowerCase()
+        val LOWERCASE_ALPHA = UPPERCASE_ALPHA.lowercase(Locale.getDefault())
         val NUMBERS = "0123456789"
         val ALPHA = UPPERCASE_ALPHA + LOWERCASE_ALPHA
         val ALPHANUMERIC = NUMBERS + ALPHA

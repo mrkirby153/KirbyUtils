@@ -1,15 +1,14 @@
 package me.mrkirby153.kcutils.scoreboard
 
 import me.mrkirby153.kcutils.scoreboard.items.ElementText
+import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
+import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
 import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
-import java.util.ArrayList
-import java.util.Arrays
-import java.util.HashSet
 import java.util.Random
 
 /**
@@ -17,15 +16,18 @@ import java.util.Random
  *
  * @param displayName The name of a scoreboard
  */
-open class KirbyScoreboard(displayName: String) {
+open class KirbyScoreboard(displayName: Component) {
 
     private val r = Random()
+
+    constructor(displayName: String) : this(Component.text(displayName))
+
     /**
      * Gets the scoreboard
      *
      * @return The scoreboard
      */
-    val board: Scoreboard = Bukkit.getScoreboardManager()!!.newScoreboard
+    val board: Scoreboard = Bukkit.getScoreboardManager().newScoreboard
     private val sideObjective = addObjective(displayName, DisplaySlot.SIDEBAR)
     private val scoreboardElements = ArrayList<ScoreboardElement>()
 
@@ -188,15 +190,13 @@ open class KirbyScoreboard(displayName: String) {
             }
             if (scoreboardTeam == null)
                 scoreboardTeam = board.registerNewTeam(t.filteredName)
-            var prefix = t.prefixColor.toString() + ""
-            if (t.showPrefix && t.prefix != null) {
-                prefix += t.prefixColor.toString() + String.format(t.prefixFormat, t.prefix!!.toUpperCase())+ " "
-            }
-            scoreboardTeam.prefix = prefix
-            scoreboardTeam.suffix = ChatColor.RESET.toString() + ""
+
+            val prefix = if (t.showPrefix) t.prefix?.uppercase() ?: "" else ""
+            scoreboardTeam.prefix(Component.empty().color(t.prefixColor).content(prefix))
+            scoreboardTeam.suffix(Component.empty())
             scoreboardTeam.setCanSeeFriendlyInvisibles(t.seeInvisible)
             scoreboardTeam.setAllowFriendlyFire(t.friendlyFire)
-            scoreboardTeam.color = t.color
+            scoreboardTeam.color(t.color)
 
             // Update all the players on the team
             val playersOnTeam = t.players.mapNotNull { Bukkit.getPlayer(it) }.map { it.name }
@@ -205,9 +205,9 @@ open class KirbyScoreboard(displayName: String) {
             val toAdd = playersOnTeam.filter { p -> !playersOnScoreboardTeam.contains(p) }
             val toRemove = playersOnScoreboardTeam.filter { p -> !playersOnTeam.contains(p) }
             if (debug && toAdd.isNotEmpty())
-                println("[ADD] " + Arrays.toString(toAdd.toTypedArray()))
+                println("[ADD] " + toAdd.toTypedArray().contentToString())
             if (debug && toRemove.isNotEmpty())
-                println("[REMOVE] " + Arrays.toString(toRemove.toTypedArray()))
+                println("[REMOVE] " + toRemove.toTypedArray().contentToString())
 
             toRemove.forEach { scoreboardTeam.removeEntry(it) }
             toAdd.forEach { scoreboardTeam.addEntry(it) }
@@ -233,10 +233,13 @@ open class KirbyScoreboard(displayName: String) {
      * @return The [Objective] that was added
      */
     @JvmOverloads
-    fun addObjective(displayName: String, displaySlot: DisplaySlot, criteria: String = "dummy"): Objective {
-        val o = board.registerNewObjective("Obj-" + r.nextInt(999999), criteria)
+    fun addObjective(
+        displayName: Component,
+        displaySlot: DisplaySlot,
+        criteria: Criteria = Criteria.DUMMY
+    ): Objective {
+        val o = board.registerNewObjective("Obj-" + r.nextInt(999999), criteria, displayName)
         o.displaySlot = displaySlot
-        o.displayName = displayName
         return o
     }
 

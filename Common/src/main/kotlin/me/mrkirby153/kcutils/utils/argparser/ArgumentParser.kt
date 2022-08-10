@@ -3,14 +3,14 @@ package me.mrkirby153.kcutils.utils.argparser
 import java.util.LinkedList
 
 
+private val SPACE_RE = Regex("\"[^\"]+\"|\\S+")
+private val QUOTE_RE = Regex("^\"|\"\$")
+private val ARG_RE = Regex("-([^-])|--(\\S+)")
+
 /**
  * An argument parser for parsing a series of arguments into key-value pairs
  */
 class ArgumentParser {
-
-    private val SPACE_RE = Regex("\"[^\"]+\"|\\S+")
-    private val QUOTE_RE = Regex("^\"|\"\$")
-    private val ARG_RE = Regex("-([^-])|--(\\S+)")
 
     private val arguments = mutableListOf<Option>()
 
@@ -168,8 +168,8 @@ class ArgumentParser {
     @JvmOverloads
     fun getHelp(prefix: String? = ""): String {
         return buildString {
-            appendln(getShortHelp(prefix))
-            appendln("Usage: ")
+            appendLine(getShortHelp(prefix))
+            appendLine("Usage: ")
             val opts = mutableMapOf<String, String>()
             arguments.forEach {
                 opts[it.key + " " + it.aliases.joinToString(", ")] = it.help ?: ""
@@ -179,7 +179,7 @@ class ArgumentParser {
                 append(" ")
                 append(opt)
                 append(" ".repeat(kotlin.math.max(0, max - opt.length)))
-                appendln(help)
+                appendLine(help)
             }
         }
     }

@@ -13,7 +13,7 @@ import org.bukkit.configuration.ConfigurationSection
  * @property y          The amount in the Y-Direction the block is
  * @property z          The amount in the Z-direction the block is
  * @property material   The material the block is made of
- * @property data       The data value of the material
+ * @property blockState The block state of this block
  */
 class RelativeBlock(val x: Int, val y: Int, val z: Int, val material: Material,
                     val blockState: ConfigurationSection?) {

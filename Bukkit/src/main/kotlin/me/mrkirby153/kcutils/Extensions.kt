@@ -13,50 +13,6 @@ import org.bukkit.entity.Player
  */
 fun Player.sendMessage(component: BaseComponent) = this.spigot().sendMessage(component)
 
-
-/**
- * Creates a [TextComponentBuilder]
- *
- * @param text  The Text
- * @param color The color of the text
- *
- * @return A [TextComponentBuilder]
- */
-@JvmOverloads
-fun component(text: String? = null,
-              color: ChatColor = ChatColor.WHITE): TextComponentBuilder = TextComponentBuilder().apply {
-    if (text != null)
-        this.text = text
-    this.color = color
-}
-
-/**
- * Creates a [TextComponentBuilder]
- *
- * @param   text The text
- * @param   value The builder to apply
- *
- * @return A [TextComponentBuilder]
- */
-inline fun component(text: String? = null,
-                     value: TextComponentBuilder.() -> Unit): TextComponentBuilder {
-    return component(text).apply(value)
-}
-
-/**
- * Creates a [TextComponentBuilder]
- *
- * @param   text The text
- * @param   color The color of the text
- * @param   value The builder to apply
- *
- * @return A [TextComponentBuilder]
- */
-inline fun component(text: String? = null, color: ChatColor,
-                     value: TextComponentBuilder.() -> Unit): TextComponentBuilder {
-    return component(text, color).apply(value)
-}
-
 /**
  * Creates a new [ItemStackBuilder]
  *

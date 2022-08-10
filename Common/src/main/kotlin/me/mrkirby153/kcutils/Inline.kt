@@ -15,6 +15,7 @@ inline fun <T : AutoCloseable, R> T.use(block: (T) -> R): R {
         try {
             this.close()
         } catch (closeException: Exception) {
+            // Ignore
         }
         throw e
     } finally {

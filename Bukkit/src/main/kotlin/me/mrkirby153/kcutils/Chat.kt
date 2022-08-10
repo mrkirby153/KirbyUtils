@@ -13,9 +13,9 @@ import net.kyori.adventure.text.format.TextDecoration
  */
 object Chat {
 
-    var ACCENT_COLOR = NamedTextColor.GOLD
-    var TAG_COLOR = NamedTextColor.BLUE
-    var TEXT_COLOR = NamedTextColor.GRAY
+    var ACCENT_COLOR: TextColor = NamedTextColor.GOLD
+    var TAG_COLOR: TextColor = NamedTextColor.BLUE
+    var TEXT_COLOR: TextColor = NamedTextColor.GRAY
 
     /**
      * Constructs an error message
@@ -110,7 +110,7 @@ object Chat {
                 }
             }
         }
-        return  baseComponent.append(msg)
+        return baseComponent.append(msg)
     }
 
     /**
@@ -123,5 +123,3 @@ object Chat {
     @JvmStatic
     fun message(message: String) = message("", message)
 }
-
-private data class Replacement(val key: String, val start: Int, val end: Int)

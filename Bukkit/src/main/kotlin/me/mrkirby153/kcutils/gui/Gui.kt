@@ -1,5 +1,6 @@
 package me.mrkirby153.kcutils.gui
 
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -22,7 +23,7 @@ import java.util.function.Consumer
  *
  * @param <T> A JavaPlugin
 */
-abstract class Gui<T : JavaPlugin>(protected var plugin: T, rows: Int, title: String) : Listener {
+abstract class Gui<T : JavaPlugin>(protected var plugin: T, rows: Int, title: Component) : Listener {
 
     /**
      * The map of slots to their actions
@@ -32,7 +33,7 @@ abstract class Gui<T : JavaPlugin>(protected var plugin: T, rows: Int, title: St
     /**
      * The inventory
      */
-    protected val inventory: Inventory = Bukkit.createInventory(null, rows * 9)
+    protected val inventory: Inventory = Bukkit.createInventory(null, rows * 9, title)
 
     /**
      * If the listener has been registered
