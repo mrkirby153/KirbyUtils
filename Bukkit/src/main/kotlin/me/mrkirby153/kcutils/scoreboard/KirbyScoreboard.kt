@@ -3,6 +3,7 @@ package me.mrkirby153.kcutils.scoreboard
 import me.mrkirby153.kcutils.scoreboard.items.ElementText
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
@@ -92,7 +93,7 @@ open class KirbyScoreboard(displayName: Component) {
                     var matched = false
                     for (otherLines in newLines) {
                         if (l == otherLines) {
-                            l += "\u200B" // Zero width space
+                            l += ChatColor.RESET
                             matched = true
                         }
                     }
