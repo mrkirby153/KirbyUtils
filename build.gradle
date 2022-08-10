@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group = 'me.mrkirby153'
-    version = '3.5-SNAPSHOT'
+    version = '4.0-SNAPSHOT'
 }
 String propertyOrEnv(property, env) {
     return project.hasProperty(property)? project.properties[property] : System.getenv(env)
@@ -32,10 +32,12 @@ publishing {
 }
 
 subprojects {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
     repositories {
         mavenCentral()
         jcenter()
+    }
+
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
