@@ -1,7 +1,6 @@
 package me.mrkirby153.kcutils
 
 import net.kyori.adventure.text.Component
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
@@ -165,6 +164,7 @@ class ItemFactory(private val material: Material) {
             return 1
         }
 
+        @Deprecated("Deprecated in Java")
         override fun getName(): String {
             return "NullEnchantment"
         }
