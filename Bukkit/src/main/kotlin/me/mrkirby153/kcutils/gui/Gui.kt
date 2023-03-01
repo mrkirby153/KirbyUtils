@@ -14,7 +14,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import java.lang.ref.WeakReference
-import java.util.HashMap
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 

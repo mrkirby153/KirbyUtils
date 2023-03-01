@@ -1,8 +1,6 @@
 package me.mrkirby153.kcutils.scoreboard
 
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
-import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import java.util.UUID
 

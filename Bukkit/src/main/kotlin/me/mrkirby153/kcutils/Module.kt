@@ -3,7 +3,6 @@ package me.mrkirby153.kcutils
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.Locale
 import kotlin.system.measureTimeMillis
 
 /**
