@@ -10,7 +10,9 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     implementation "io.github.microutils:kotlin-logging-jvm:3.0.5"
+    compileOnly "org.springframework:spring-tx:6.0.4"
 }
 java {
     withSourcesJar()
@@ -22,9 +24,9 @@ javadocJar.from dokkaJavadoc
 
 publishing {
     publications {
-        common(MavenPublication) {
+        spring(MavenPublication) {
             from components.java
-            artifactId = 'KirbyUtils-Common'
+            artifactId = 'KirbyUtils-Spring'
         }
     }
 }
