@@ -24,35 +24,35 @@ import kotlin.experimental.or
  */
 class BinaryFlag<T : Enum<T>> constructor(
     private val type: Class<T>,
-    private val value: Byte
+    private val value: Long
 ) : Iterable<T> {
-    private val constructor = javaClass.getConstructor(Class::class.java, Byte::class.java)
+    private val constructor = javaClass.getConstructor(Class::class.java, Long::class.java)
 
     private fun type() = type
 
-    private fun create(value: Byte): BinaryFlag<T> {
+    private fun create(value: Long): BinaryFlag<T> {
         return constructor.newInstance(type, value)
     }
 
     /**
      * Returns true if this [BinaryFlag] is empty
      */
-    fun isEmpty() = value == 0.toByte()
+    fun isEmpty() = value == 0L
 
     /**
      * Returns true if this [BinaryFlag] has the given [value]
      */
-    fun has(value: T) = this.value and makeMask(value) != 0.toByte()
+    fun has(value: T) = this.value and makeMask(value) != 0L
 
     /**
      * Returns true if this [BinaryFlag] has any of the given [values]
      */
-    fun hasAny(vararg values: T) = this.value and makeMask(*values) != 0.toByte()
+    fun hasAny(vararg values: T) = this.value and makeMask(*values) != 0L
 
     /**
      * Returns true if this [BinaryFlag] has any of the given [values]
      */
-    fun hasAny(values: BinaryFlag<T>) = this.value and values.value != 0.toByte()
+    fun hasAny(values: BinaryFlag<T>) = this.value and values.value != 0L
 
     /**
      * Returns true if this [BinaryFlag] has all of the given [values]
@@ -146,14 +146,14 @@ class BinaryFlag<T : Enum<T>> constructor(
          * Creates a mask of the given [value]
          */
         @JvmStatic
-        fun <T : Enum<T>> makeMask(value: Enum<T>) = (1 shl value.ordinal).toByte()
+        fun <T : Enum<T>> makeMask(value: Enum<T>) = (1 shl value.ordinal).toLong()
 
         /**
          * Creates a mask of the given [values]
          */
         @JvmStatic
-        fun <T : Enum<T>> makeMask(values: Iterable<Enum<T>>): Byte {
-            var value = 0.toByte()
+        fun <T : Enum<T>> makeMask(values: Iterable<Enum<T>>): Long {
+            var value = 0L
             values.forEach {
                 value = value or makeMask(it)
             }
@@ -168,7 +168,7 @@ class BinaryFlag<T : Enum<T>> constructor(
          */
         @JvmStatic
         @JvmOverloads
-        fun <T : Enum<T>> create(type: Class<T>, value: Byte = 0) = BinaryFlag(type, value)
+        fun <T : Enum<T>> create(type: Class<T>, value: Long = 0) = BinaryFlag(type, value)
 
         /**
          * Creates a new [BinaryFlag] of the given [type] and provided [values]
@@ -179,7 +179,7 @@ class BinaryFlag<T : Enum<T>> constructor(
     }
 }
 
-inline fun <reified T : Enum<T>> binaryFlag(value: Byte = 0): BinaryFlag<T> =
+inline fun <reified T : Enum<T>> binaryFlag(value: Long = 0): BinaryFlag<T> =
     BinaryFlag(T::class.java, value)
 
 inline fun <reified T : Enum<T>> binaryFlag(vararg values: T) =
