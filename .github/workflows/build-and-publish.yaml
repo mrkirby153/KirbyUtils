@@ -22,5 +22,5 @@ jobs:
       - name: Publish
         run: ./gradlew publish
         env:
-          REPO_USERNAME: ${{ env.REPO_USERNAME }}
+          REPO_USERNAME: ${{ vars.REPO_USERNAME }}
           REPO_PASSWORD: ${{ secrets.REPO_PASSWORD }}
