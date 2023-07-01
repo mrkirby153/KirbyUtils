@@ -13,9 +13,9 @@ group = "me.mrkirby153"
 version = "5.0-SNAPSHOT"
 
 fun publishUrl() = if (project.version.toString().endsWith("-SNAPSHOT")) {
-    "https://repo.mrkriby153.com/repository/maven-snapshots/"
+    "https://repo.mrkirby153.com/repository/maven-snapshots/"
 } else {
-    "https://repo.mrkriby153.com/repository/maven-releases"
+    "https://repo.mrkirby153.com/repository/maven-releases"
 }
 
 java {
