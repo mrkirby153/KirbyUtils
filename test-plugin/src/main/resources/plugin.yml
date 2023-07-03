@@ -1,0 +1,7 @@
+name: test-plugin
+main: me.mrkirby153.kcutils.testplugin.TestPlugin
+version: 0.0.1
+commands:
+  test-command:
+    permission: kcutils.testplugin.test-command.use
+    description: A test command
