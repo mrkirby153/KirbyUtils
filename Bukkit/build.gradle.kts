@@ -21,8 +21,9 @@ dependencies {
 
 tasks.withType<ShadowJar> {
     archiveClassifier.set("")
-    relocate("co.aikar.commands", "me.mrkirby153.kcutils.thirdparty.acf")
-    relocate("co.aikar.locales", "me.mrkirby153.kcutils.thirdparty.locales")
+    dependencies {
+        exclude(dependency("co.aikar:acf-core"))
+    }
 }
 
 tasks {
