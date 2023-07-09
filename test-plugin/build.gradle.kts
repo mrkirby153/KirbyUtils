@@ -36,3 +36,7 @@ tasks {
         dependsOn(":KirbyUtils-Bukkit:shadowJar")
     }
 }
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}

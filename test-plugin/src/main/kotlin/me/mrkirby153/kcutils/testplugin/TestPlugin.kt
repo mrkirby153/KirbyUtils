@@ -2,7 +2,15 @@ package me.mrkirby153.kcutils.testplugin
 
 import me.mrkirby153.kcutils.Chat
 import me.mrkirby153.kcutils.Time
+import me.mrkirby153.kcutils.extensions.flags
+import me.mrkirby153.kcutils.extensions.glowing
+import me.mrkirby153.kcutils.extensions.itemStack
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.plugin.java.JavaPlugin
 
 class TestPlugin : JavaPlugin() {
@@ -18,6 +26,13 @@ class TestPlugin : JavaPlugin() {
                 return@setExecutor true
             }
             sender.sendMessage(Chat.message("You are a player :D"))
+                val sword = itemStack(Material.IRON_SWORD, 1) {
+                    displayName(Component.text("Cool Sword").decoration(TextDecoration.ITALIC, false))
+                    glowing = true
+                    flags[ItemFlag.HIDE_UNBREAKABLE] = true
+                    isUnbreakable = true
+                }
+            sender.inventory.addItem(sword)
             true
         }
     }

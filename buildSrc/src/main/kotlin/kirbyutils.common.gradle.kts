@@ -10,7 +10,7 @@ repositories {
 }
 
 group = "me.mrkirby153"
-version = "5.0-SNAPSHOT"
+version = "6.0-SNAPSHOT"
 
 fun publishUrl() = if (project.version.toString().endsWith("-SNAPSHOT")) {
     "https://repo.mrkirby153.com/repository/maven-snapshots/"
@@ -20,6 +20,7 @@ fun publishUrl() = if (project.version.toString().endsWith("-SNAPSHOT")) {
 
 java {
     withSourcesJar()
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
 publishing {

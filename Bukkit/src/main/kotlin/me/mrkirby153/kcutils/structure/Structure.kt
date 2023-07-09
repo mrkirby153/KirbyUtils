@@ -1,6 +1,6 @@
 package me.mrkirby153.kcutils.structure
 
-import me.mrkirby153.kcutils.getOrCreateSection
+import me.mrkirby153.kcutils.extensions.getOrCreateSection
 import me.mrkirby153.kcutils.structure.adapter.data.MaterialDataAdapter
 import me.mrkirby153.kcutils.structure.adapter.state.BlockStateAdapter
 import org.bukkit.Bukkit
