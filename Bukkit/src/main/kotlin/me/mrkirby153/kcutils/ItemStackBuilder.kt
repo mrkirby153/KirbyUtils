@@ -1,5 +1,7 @@
 package me.mrkirby153.kcutils
 
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
@@ -26,22 +28,22 @@ class ItemStackBuilder(var material: Material, var data: Int = 0) {
     /**
      * The Item's custom name
      */
-    var name: String? = null
+    private var name: Component? = null
 
     /**
      * The Item's lore
      */
-    var lore = mutableListOf<String>()
+    private val lore = mutableListOf<Component>()
 
     /**
      * Any flags the item has
      */
-    var flags = mutableListOf<ItemFlag>()
+    private val flags = mutableListOf<ItemFlag>()
 
     /**
      * All enchantments that the item has
      */
-    var enchantments = mutableMapOf<Enchantment, Int>()
+    private val enchantments = mutableMapOf<Enchantment, Int>()
 
     /**
      * Construct the [ItemStack]
@@ -54,7 +56,7 @@ class ItemStackBuilder(var material: Material, var data: Int = 0) {
         if (this.unbreakable)
             itemFactory.unbreakable()
 
-        if (!this.name.isNullOrEmpty())
+        if (this.name != null)
             itemFactory.name(this.name!!)
 
         lore.forEach { itemFactory.lore(it) }
@@ -62,6 +64,51 @@ class ItemStackBuilder(var material: Material, var data: Int = 0) {
 
         enchantments.forEach { ench, level -> itemFactory.enchantment(ench, level) }
         return itemFactory.construct()
+    }
+
+    /**
+     * Sets the name of ths [ItemStack] to the provided [name]
+     */
+    fun name(name: String) {
+        name(
+            Component.text(name).decoration(TextDecoration.ITALIC, false)
+                .asComponent()
+        )
+    }
+
+    /**
+     * Sets the name of this [ItemStack] to the provided [component]
+     */
+    fun name(component: Component) {
+        this.name = component
+    }
+
+    /**
+     * Adds the given [lore] to the [ItemStack]'s lore
+     */
+    fun lore(lore: String) {
+        lore(Component.text(lore).decoration(TextDecoration.ITALIC, false))
+    }
+
+    /**
+     * Adds the given [component] to the [ItemStack]'s lore
+     */
+    fun lore(component: Component) {
+        this.lore.add(component)
+    }
+
+    /**
+     * Adds the given [flags] to this [ItemStack]
+     */
+    fun flags(vararg flags: ItemFlag) {
+        this.flags.addAll(flags)
+    }
+
+    /**
+     * Adds the provided [enchantment] at the given [level] to this [ItemStack]
+     */
+    fun enchant(enchantment: Enchantment, level: Int) {
+        this.enchantments[enchantment] = level
     }
 
 }

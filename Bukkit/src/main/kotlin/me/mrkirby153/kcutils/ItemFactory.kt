@@ -1,6 +1,7 @@
 package me.mrkirby153.kcutils
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
@@ -47,7 +48,7 @@ class ItemFactory(private val material: Material) {
         if (meta is Damageable) {
             meta.damage = this.damage
         }
-        meta.lore()
+        meta.lore(this.lore)
         meta.isUnbreakable = unbreakable
         meta.addItemFlags(*flags.toTypedArray())
         enchantments.forEach { (e, l) -> meta.addEnchant(e, l, true) }
@@ -112,8 +113,13 @@ class ItemFactory(private val material: Material) {
      */
     fun lore(vararg lore: String): ItemFactory {
         for (l in lore) {
-            this.lore.add(Component.text(l))
+            this.lore.add(Component.text(l).decoration(TextDecoration.ITALIC, false))
         }
+        return this
+    }
+
+    fun lore(vararg lore: Component): ItemFactory {
+        this.lore.addAll(lore)
         return this
     }
 
@@ -125,7 +131,7 @@ class ItemFactory(private val material: Material) {
      * @return The factory
      */
     fun name(name: String): ItemFactory {
-        this.name = Component.text(name)
+        this.name = Component.text(name).decoration(TextDecoration.ITALIC, false)
         return this
     }
 
