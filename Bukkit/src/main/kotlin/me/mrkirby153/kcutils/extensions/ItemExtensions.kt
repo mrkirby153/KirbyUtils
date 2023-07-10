@@ -47,6 +47,13 @@ inline var ItemStack.displayName: Component?
     }
 
 /**
+ * Sets this item stack's display name to the provided [name]
+ */
+fun ItemStack.displayName(name: Component) = apply {
+    displayName = name
+}
+
+/**
  * Any [ItemFlag]s on this [ItemMeta]
  */
 inline val ItemMeta.flags: ItemFlags
