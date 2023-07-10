@@ -1,4 +1,4 @@
-package me.mrkirby153.kcutils.scoreboard
+package me.mrkirby153.kcutils.legacyscoreboard
 
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player

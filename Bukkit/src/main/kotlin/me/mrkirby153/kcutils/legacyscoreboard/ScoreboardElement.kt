@@ -1,4 +1,4 @@
-package me.mrkirby153.kcutils.scoreboard
+package me.mrkirby153.kcutils.legacyscoreboard
 
 /**
  * An interface for all scoreboard elements

@@ -15,6 +15,7 @@ repositories {
 dependencies {
     implementation(project(":KirbyUtils-Common"))
     implementation("co.aikar:acf-core:0.5.0-SNAPSHOT")
+    implementation("net.kyori:adventure-text-serializer-legacy:4.14.0")
     compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.4.0-SNAPSHOT")
 }

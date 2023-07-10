@@ -1,6 +1,6 @@
-package me.mrkirby153.kcutils.scoreboard
+package me.mrkirby153.kcutils.legacyscoreboard
 
-import me.mrkirby153.kcutils.scoreboard.items.ElementText
+import me.mrkirby153.kcutils.legacyscoreboard.items.ElementText
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor

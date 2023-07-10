@@ -1,6 +1,6 @@
-package me.mrkirby153.kcutils.scoreboard.items
+package me.mrkirby153.kcutils.legacyscoreboard.items
 
-import me.mrkirby153.kcutils.scoreboard.ScoreboardElement
+import me.mrkirby153.kcutils.legacyscoreboard.ScoreboardElement
 
 /**
  * A scoreboard element representing two lines: a header and the content
