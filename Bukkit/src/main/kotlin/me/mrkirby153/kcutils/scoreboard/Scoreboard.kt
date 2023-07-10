@@ -13,25 +13,35 @@ import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
-import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
 import java.lang.ref.WeakReference
 import java.util.UUID
 
+/**
+ * Marker annotation for the scoreboard DSL
+ */
 @DslMarker
 @Retention(AnnotationRetention.BINARY)
-annotation class ScoreboardDslMarker
+internal annotation class ScoreboardDslMarker
 
 
+/**
+ * Creates a new scoreboard
+ */
 @ScoreboardDslMarker
 fun scoreboard(plugin: Plugin, body: ScoreboardDsl.() -> Unit) =
     ScoreboardDsl(plugin).apply(body)
 
+/**
+ * Creates a new scoreboard
+ */
 @ScoreboardDslMarker
 @JvmName("pluginScoreboard")
 fun Plugin.scoreboard(body: ScoreboardDsl.() -> Unit) = scoreboard(this, body)
 
-
+/**
+ * Wrapper class handing scoreboard operations.
+ */
 class ScoreboardDsl(internal val plugin: Plugin) {
     // A list of users who can view the scoreboard
     private val players = mutableListOf<WeakReference<Player>>()
@@ -45,8 +55,6 @@ class ScoreboardDsl(internal val plugin: Plugin) {
     private val objectives = mutableListOf<ObjectiveBuilder>()
     private val teams = mutableMapOf<String, TeamBuilder>()
 
-    private val current = arrayOfNulls<Component>(15)
-
     private var titleUpdater: BukkitTask? = null
     private var lineUpdater: BukkitTask? = null
 
@@ -57,6 +65,11 @@ class ScoreboardDsl(internal val plugin: Plugin) {
 
     private var initialized = false
 
+    /**
+     * The interval at which the title should update (in ticks). Set to `0` to disable updating.
+     *
+     * The title can be manually updated by calling [updateTitle]
+     */
     var titleUpdateInterval: Long = 0
         set(value) {
             field = value
@@ -65,6 +78,11 @@ class ScoreboardDsl(internal val plugin: Plugin) {
             maybeStartTitleUpdate()
         }
 
+    /**
+     * The interval at which scoreboard lines update (in ticks). Set to `0` to disable updating.
+     *
+     * Lines can be manually updated by calling [updateLines]
+     */
     var lineUpdateInterval: Long = 0
         set(value) {
             field = value
@@ -74,6 +92,10 @@ class ScoreboardDsl(internal val plugin: Plugin) {
         }
 
 
+    /**
+     * Destroys this scoreboard. Cancels the running update tasks and removes the scoreboard from
+     * all players
+     */
     fun destroy() {
         titleUpdater?.cancel()
         lineUpdater?.cancel()
@@ -88,6 +110,11 @@ class ScoreboardDsl(internal val plugin: Plugin) {
         }
     }
 
+    /**
+     * Shows this scoreboard to the provided [player].
+     *
+     * The first time the scoreboard is shown to any user, it will be initialized
+     */
     fun show(player: Player) {
         val ref = WeakReference(player)
         players.add(ref)
@@ -101,38 +128,60 @@ class ScoreboardDsl(internal val plugin: Plugin) {
         objectives.forEach { it.maybeStartUpdate() }
     }
 
+    /**
+     * Sets the title of this scoreboard. This method is invoked every time [updateTitle] is called
+     */
     @ScoreboardDslMarker
     fun title(updater: () -> Component) {
         this.titleHandler = updater
     }
 
+    /**
+     * Sets the title of this scoreboard to the given [component].
+     */
     fun title(component: Component) {
         title {
             component
         }
     }
 
+    /**
+     * Sets the lines of this scoreboard. This method is invoked every time [updateLines] is called.
+     *
+     * To prevent flickering of the scoreboard, only lines that have changed will be re-sent to
+     * players
+     */
     @ScoreboardDslMarker
     fun lines(handler: LineBuilder.() -> Unit) {
         this.lineHandler = handler
     }
 
+    /**
+     * Invoked once when this scoreboard is first shown. Perform any one-time set up here
+     */
     @ScoreboardDslMarker
     fun onInitialize(body: () -> Unit) {
         this.onInitialize = body
     }
 
+    /**
+     * Gets or creates the team with the given [name] and returns a [TeamBuilder]
+     */
     @ScoreboardDslMarker
     fun team(name: String, body: TeamBuilder.() -> Unit) {
         val builder = this.teams.computeIfAbsent(name) {
             TeamBuilder(
-                scoreboard,
                 scoreboard.registerNewTeam(it)
             )
         }
         builder.body()
     }
 
+    /**
+     * Creates a new objective with the provided [name], [criteria], and [slot].
+     *
+     * [DisplaySlot.SIDEBAR] cannot be overridden by this method. Use [lines] instead.
+     */
     @ScoreboardDslMarker
     fun objective(
         name: String,
@@ -148,6 +197,9 @@ class ScoreboardDsl(internal val plugin: Plugin) {
         objective.maybeStartUpdate()
     }
 
+    /**
+     * Updates the sidebar's title
+     */
     fun updateTitle() {
         val newTitle = titleHandler.invoke()
         val objective = scoreboard.getObjective(DisplaySlot.SIDEBAR) ?: return
@@ -156,6 +208,9 @@ class ScoreboardDsl(internal val plugin: Plugin) {
         }
     }
 
+    /**
+     * Updates the sidebar's lines
+     */
     fun updateLines() {
         val builder = LineBuilder()
         val objective = scoreboard.getObjective(DisplaySlot.SIDEBAR) ?: return
@@ -195,6 +250,9 @@ class ScoreboardDsl(internal val plugin: Plugin) {
         }
     }
 
+    /**
+     * Removes this scoreboard from the player. Their scoreboard will be reset to the main scoreboard
+     */
     fun hide(player: Player) {
         players.removeIf { it.get() == null || it.get() == player }
         player.scoreboard = Bukkit.getScoreboardManager().mainScoreboard
@@ -244,25 +302,47 @@ class ScoreboardDsl(internal val plugin: Plugin) {
 
 }
 
+/**
+ * Builder for building a series of lines for the scoreboard.
+ *
+ * Each scoreboard can have a maximum of 16 lines. To prevent flickering, each line is compared with
+ * the current scoreboard's lines, and only the line that's different will be changed. For example,
+ * if one line out of 15 changes, that one line will be updated on the scoreboard, instead of all 15.
+ *
+ *
+ * Additionally, LineBuilders can only support [NamedTextColor] due to Minecraft limitations
+ */
 class LineBuilder {
     internal var lines = mutableMapOf<Int, () -> Component>()
 
+    /**
+     * Sets the line at [line] to the value returned by [body]
+     */
     @ScoreboardDslMarker
     fun line(line: Int, body: () -> Component) {
         check(line > 0) { "No more space on the scoreboard" }
         lines[line] = body
     }
 
+    /**
+     * Sets the next line to the value returned by [body]
+     */
     fun line(body: () -> Component) {
         line(getNextLineNumber(), body)
     }
 
+    /**
+     * Sets the line at [line] to [component]
+     */
     fun line(line: Int, component: Component) {
         line(line) {
             component
         }
     }
 
+    /**
+     * Sets the next line to [component]
+     */
     fun line(component: Component = Component.text("")) {
         line(getNextLineNumber(), component)
     }
@@ -275,12 +355,20 @@ class LineBuilder {
     }
 }
 
+/**
+ * Builder for custom objectives on the scoreboard. The most commonly used objective slots are
+ * [DisplaySlot.BELOW_NAME] and [DisplaySlot.PLAYER_LIST] to show objectives below the name and in
+ * the player list respectively.
+ */
 class ObjectiveBuilder(private val scoreboard: ScoreboardDsl, private val objective: Objective) {
 
     private var updateTask: BukkitTask? = null
 
     private var updateHandler: Objective.() -> Unit = {}
 
+    /**
+     * The interval [onUpdate] should be called (in ticks). Set to `0` to disable.
+     */
     var updateInterval: Long = 0
         set(value) {
             field = value
@@ -289,6 +377,9 @@ class ObjectiveBuilder(private val scoreboard: ScoreboardDsl, private val object
             maybeStartUpdate()
         }
 
+    /**
+     * Invoked periodically according to [updateInterval] to update the objective's values
+     */
     @ScoreboardDslMarker
     fun onUpdate(body: Objective.() -> Unit) {
         this.updateHandler = body
@@ -298,11 +389,14 @@ class ObjectiveBuilder(private val scoreboard: ScoreboardDsl, private val object
         this.updateHandler.invoke(objective)
     }
 
+    /**
+     * Sets the display name of this objective to [component]
+     */
     fun displayName(component: Component) {
         objective.displayName(component)
     }
 
-    fun maybeStartUpdate() {
+    internal fun maybeStartUpdate() {
         if (updateTask != null)
             return
         if (updateInterval > 0 && scoreboard.hasPlayers()) {
@@ -311,27 +405,42 @@ class ObjectiveBuilder(private val scoreboard: ScoreboardDsl, private val object
         }
     }
 
+    /**
+     * Stops the periodic invocation of [onUpdate]
+     */
     fun destroy() {
         updateTask?.cancel()
     }
 }
 
-class TeamBuilder(private val scoreboard: Scoreboard, private val team: Team) {
+/**
+ * Builder for managing scoreboard teams
+ */
+class TeamBuilder(private val team: Team) {
 
     private val members = mutableSetOf<UUID>()
 
+    /**
+     * If players on this team can see friendly invisble users
+     */
     var canSeeFriendlyInvisibles: Boolean = false
         set(value) {
             field = value
             update()
         }
 
+    /**
+     * If friendly fire is enabled for this team
+     */
     var friendlyFire: Boolean = true
         set(value) {
             field = value
             update()
         }
 
+    /**
+     * The team's color
+     */
     var color: NamedTextColor = NamedTextColor.WHITE
         set(value) {
             field = value
@@ -339,38 +448,59 @@ class TeamBuilder(private val scoreboard: Scoreboard, private val team: Team) {
         }
 
 
+    /**
+     * The team's prefix
+     */
     var prefix: Component? = null
         set(value) {
             field = value
             update()
         }
 
+    /**
+     * The team's suffix
+     */
     var suffix: Component? = null
         set(value) {
             field = value
             update()
         }
 
+    /**
+     * Adds the given [player] to the team
+     */
     fun add(player: Player) {
         members.add(player.uniqueId)
         update()
     }
 
+    /**
+     * Removes the given [player] from the team
+     */
     fun remove(player: Player) {
         members.remove(player.uniqueId)
         update()
     }
 
+    /**
+     * Sets the members of the team to [player]
+     */
     fun members(vararg player: Player) {
         members.clear()
         members.addAll(player.map { it.uniqueId })
     }
 
+    /**
+     * Sets the members of the team to [members]
+     */
     fun members(collection: Collection<Player>) {
         members.clear()
         members.addAll(collection.map { it.uniqueId })
     }
 
+    /**
+     * Get a list of all users on the team
+     */
     fun getMembers() = members.map { Bukkit.getOfflinePlayer(it) }
 
     private fun update() {
