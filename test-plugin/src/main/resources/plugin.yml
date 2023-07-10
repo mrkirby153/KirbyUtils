@@ -1,6 +1,7 @@
 name: test-plugin
 main: me.mrkirby153.kcutils.testplugin.TestPlugin
 version: 0.0.1
+api-version: 1.19
 commands:
   test-command:
     permission: kcutils.testplugin.test-command.use

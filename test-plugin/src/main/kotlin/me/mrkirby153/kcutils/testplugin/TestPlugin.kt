@@ -2,17 +2,23 @@ package me.mrkirby153.kcutils.testplugin
 
 import me.mrkirby153.kcutils.Chat
 import me.mrkirby153.kcutils.Time
+import me.mrkirby153.kcutils.extensions.glowing
 import me.mrkirby153.kcutils.extensions.italic
+import me.mrkirby153.kcutils.extensions.itemStack
+import me.mrkirby153.kcutils.extensions.meta
 import me.mrkirby153.kcutils.extensions.miniMessage
 import me.mrkirby153.kcutils.extensions.setScore
 import me.mrkirby153.kcutils.extensions.toComponent
+import me.mrkirby153.kcutils.gui.gui
 import me.mrkirby153.kcutils.scoreboard.ScoreboardDsl
 import me.mrkirby153.kcutils.scoreboard.scoreboard
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
@@ -32,21 +38,40 @@ class TestPlugin : JavaPlugin(), Listener {
                 sender.sendMessage(Chat.error("You must be a player to perform this command"))
                 return@setExecutor true
             }
-            if (args.isEmpty()) {
-                val scoreboardForUser = getScoreboardForUser(sender)
-                scoreboardForUser.show(sender)
-                scoreboardForUser.team("Test") {
-                    println("yay")
-                    add(sender)
-                }
-            } else {
-                if (args.size == 1 && args[0] == "destroy") {
-                    scoreboards.remove(sender.uniqueId)?.destroy()
-                    return@setExecutor true
-                }
-                clearScoreboard(sender)
-            }
+            val gui = getGui(sender)
+            gui.open(sender)
             true
+        }
+    }
+
+
+    fun getGui(player: Player) = gui(1, "Test GUI".toComponent()) {
+        updateFrequency = 1
+        slot(0, 0, itemStack(Material.SUNFLOWER) {
+            displayName("Set Time To Day".toComponent().italic(false))
+        }) {
+            onClick {
+                if (clickType == ClickType.LEFT) {
+                    player.world.time = 0
+                    close()
+                }
+            }
+            onUpdate {
+                item?.meta {
+                    glowing = player.world.time < 10000
+                    lore(listOf(miniMessage("<green>Current Time:</green> <yellow>${player.world.time}").italic(false)))
+                }
+            }
+        }
+        slot(0, 1, itemStack(Material.RED_BED) {
+            displayName("Set Time To Night".toComponent().italic(false))
+        }) {
+            onClick {
+                if (clickType == ClickType.LEFT) {
+                    player.world.time = 23000
+                    close()
+                }
+            }
         }
     }
 

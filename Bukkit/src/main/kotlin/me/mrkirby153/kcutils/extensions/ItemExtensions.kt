@@ -25,6 +25,9 @@ inline fun <reified T : ItemMeta> ItemStack.meta(block: T.() -> Unit) = apply {
     itemMeta = (itemMeta as T).apply(block)
 }
 
+@JvmName("defaultMeta")
+inline fun ItemStack.meta(block: ItemMeta.() -> Unit) = meta<ItemMeta>(block)
+
 /**
  * Adds the provided component as lore
  */
