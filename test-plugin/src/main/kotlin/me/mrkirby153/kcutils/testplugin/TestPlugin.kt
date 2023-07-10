@@ -2,11 +2,14 @@ package me.mrkirby153.kcutils.testplugin
 
 import me.mrkirby153.kcutils.Chat
 import me.mrkirby153.kcutils.Time
+import me.mrkirby153.kcutils.extensions.italic
 import me.mrkirby153.kcutils.extensions.miniMessage
 import me.mrkirby153.kcutils.extensions.setScore
 import me.mrkirby153.kcutils.extensions.toComponent
 import me.mrkirby153.kcutils.scoreboard.ScoreboardDsl
 import me.mrkirby153.kcutils.scoreboard.scoreboard
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -30,7 +33,12 @@ class TestPlugin : JavaPlugin(), Listener {
                 return@setExecutor true
             }
             if (args.isEmpty()) {
-                getScoreboardForUser(sender).show(sender)
+                val scoreboardForUser = getScoreboardForUser(sender)
+                scoreboardForUser.show(sender)
+                scoreboardForUser.team("Test") {
+                    println("yay")
+                    add(sender)
+                }
             } else {
                 if (args.size == 1 && args[0] == "destroy") {
                     scoreboards.remove(sender.uniqueId)?.destroy()
@@ -60,7 +68,6 @@ class TestPlugin : JavaPlugin(), Listener {
                 line(miniMessage("You are at <green>${location.blockX}</green> <red>${location.blockY}</red> <yellow>${location.blockZ}</yellow>"))
             }
             onInitialize {
-                println("Initializing")
                 objective("health", Criteria.DUMMY, DisplaySlot.PLAYER_LIST) {
                     updateInterval = 20
                     onUpdate {
@@ -68,6 +75,12 @@ class TestPlugin : JavaPlugin(), Listener {
                             setScore(p, p.location.blockY)
                         }
                     }
+                }
+                team("Test") {
+                    color = NamedTextColor.GREEN
+                    canSeeFriendlyInvisibles = true
+                    prefix = Component.text("[PREFIX]").color(NamedTextColor.GRAY)
+                    suffix = Component.text("[SUFFIX]").color(NamedTextColor.YELLOW).italic()
                 }
             }
         }.also {

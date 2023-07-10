@@ -3,6 +3,7 @@ package me.mrkirby153.kcutils.scoreboard
 import me.mrkirby153.kcutils.extensions.runnable
 import me.mrkirby153.kcutils.extensions.toComponent
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -12,7 +13,10 @@ import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
+import org.bukkit.scoreboard.Scoreboard
+import org.bukkit.scoreboard.Team
 import java.lang.ref.WeakReference
+import java.util.UUID
 
 @DslMarker
 @Retention(AnnotationRetention.BINARY)
@@ -39,6 +43,7 @@ class ScoreboardDsl(internal val plugin: Plugin) {
     }
 
     private val objectives = mutableListOf<ObjectiveBuilder>()
+    private val teams = mutableMapOf<String, TeamBuilder>()
 
     private val current = arrayOfNulls<Component>(15)
 
@@ -118,8 +123,14 @@ class ScoreboardDsl(internal val plugin: Plugin) {
     }
 
     @ScoreboardDslMarker
-    fun teams(body: () -> Unit) {
-
+    fun team(name: String, body: TeamBuilder.() -> Unit) {
+        val builder = this.teams.computeIfAbsent(name) {
+            TeamBuilder(
+                scoreboard,
+                scoreboard.registerNewTeam(it)
+            )
+        }
+        builder.body()
     }
 
     @ScoreboardDslMarker
@@ -129,7 +140,6 @@ class ScoreboardDsl(internal val plugin: Plugin) {
         slot: DisplaySlot,
         body: ObjectiveBuilder.() -> Unit = {}
     ) {
-        println("Creating new objective")
         check(slot != DisplaySlot.SIDEBAR) { "Cannot override the SIDEBAR objective" }
         val obj = scoreboard.registerNewObjective(name, criteria, null)
         obj.displaySlot = slot
@@ -303,5 +313,83 @@ class ObjectiveBuilder(private val scoreboard: ScoreboardDsl, private val object
 
     fun destroy() {
         updateTask?.cancel()
+    }
+}
+
+class TeamBuilder(private val scoreboard: Scoreboard, private val team: Team) {
+
+    private val members = mutableSetOf<UUID>()
+
+    var canSeeFriendlyInvisibles: Boolean = false
+        set(value) {
+            field = value
+            update()
+        }
+
+    var friendlyFire: Boolean = true
+        set(value) {
+            field = value
+            update()
+        }
+
+    var color: NamedTextColor = NamedTextColor.WHITE
+        set(value) {
+            field = value
+            update()
+        }
+
+
+    var prefix: Component? = null
+        set(value) {
+            field = value
+            update()
+        }
+
+    var suffix: Component? = null
+        set(value) {
+            field = value
+            update()
+        }
+
+    fun add(player: Player) {
+        members.add(player.uniqueId)
+        update()
+    }
+
+    fun remove(player: Player) {
+        members.remove(player.uniqueId)
+        update()
+    }
+
+    fun members(vararg player: Player) {
+        members.clear()
+        members.addAll(player.map { it.uniqueId })
+    }
+
+    fun members(collection: Collection<Player>) {
+        members.clear()
+        members.addAll(collection.map { it.uniqueId })
+    }
+
+    fun getMembers() = members.map { Bukkit.getOfflinePlayer(it) }
+
+    private fun update() {
+        team.prefix(prefix?.run {
+            append(" ".toComponent())
+        })
+        team.suffix(suffix?.run {
+            Component.text(" ").append(this)
+        })
+        team.color(color)
+        team.setCanSeeFriendlyInvisibles(canSeeFriendlyInvisibles)
+        team.setAllowFriendlyFire(friendlyFire)
+
+        val playersOnTeam = members.mapNotNull { Bukkit.getPlayer(it) }.map { it.name }
+        val playersOnScoreboardTeam = team.entries
+
+        val toAdd = playersOnTeam.filter { p -> p !in playersOnScoreboardTeam }
+        val toRemove = playersOnScoreboardTeam.filter { p -> p !in playersOnTeam }
+        team.removeEntries(toRemove)
+        team.addEntries(toAdd)
     }
 }
