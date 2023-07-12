@@ -36,6 +36,7 @@ typealias GuiCanUpdateHandler = () -> Unit
 /**
  * A gui is an interactive inventory that users can click to perform various actions
  */
+@GuiDslMarker
 class Gui<T : Plugin>(
     protected var plugin: T,
     private val rows: Int,
@@ -69,7 +70,6 @@ class Gui<T : Plugin>(
      * Adds a new slot at the given [row] and [slot] to this GUI. An [item] can be specified to
      * render the item in the slot
      */
-    @GuiDslMarker
     fun slot(row: Int, slot: Int, item: ItemStack?, body: Slot.() -> Unit = {}) {
         val rawSlot = row * 9 + slot
         check(rawSlot < rows * 9) { "Attempting to access a row/slot that is outside of this inventory" }
@@ -79,7 +79,6 @@ class Gui<T : Plugin>(
     /**
      * Check to determine if this inventory can be opened
      */
-    @GuiDslMarker
     fun onOpen(handler: GuiOnOpenHandler) {
         this.onOpenHandler = handler
     }
@@ -87,7 +86,6 @@ class Gui<T : Plugin>(
     /**
      * Callback invoked when a player opens an inventory
      */
-    @GuiDslMarker
     fun canOpen(check: GuiCanOpenCheck) {
         this.canOpenHandler = check
     }
@@ -208,6 +206,7 @@ typealias SlotUpdateHandler = SlotUpdate.() -> Unit
  * A slot represents a slot in the inventory. It holds various callbacks that are invoked throughout
  * the GUI's lifecycle and when the user interacts with the inventory
  */
+@GuiDslMarker
 class Slot(
     private val rawSlot: Int,
     internal val item: ItemStack?,
@@ -221,7 +220,6 @@ class Slot(
     /**
      * Callback invoked when the gui is rendered
      */
-    @GuiDslMarker
     fun onRender(handler: SlotRenderHandler) {
         this.renderHandler = handler
     }
@@ -229,7 +227,6 @@ class Slot(
     /**
      * Callback invoked when this slot is clicked on
      */
-    @GuiDslMarker
     fun onClick(handler: SlotClickHandler) {
         this.clickHandler = handler
     }
@@ -237,7 +234,6 @@ class Slot(
     /**
      * Callback invoked periodically according to [Gui.updateFrequency] of the owning inventory
      */
-    @GuiDslMarker
     fun onUpdate(handler: SlotUpdateHandler) {
         this.updateHandler = handler
     }

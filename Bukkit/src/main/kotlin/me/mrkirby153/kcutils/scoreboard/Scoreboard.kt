@@ -28,20 +28,19 @@ internal annotation class ScoreboardDslMarker
 /**
  * Creates a new scoreboard
  */
-@ScoreboardDslMarker
 fun scoreboard(plugin: Plugin, body: ScoreboardDsl.() -> Unit) =
     ScoreboardDsl(plugin).apply(body)
 
 /**
  * Creates a new scoreboard
  */
-@ScoreboardDslMarker
 @JvmName("pluginScoreboard")
 fun Plugin.scoreboard(body: ScoreboardDsl.() -> Unit) = scoreboard(this, body)
 
 /**
  * Wrapper class handing scoreboard operations.
  */
+@ScoreboardDslMarker
 class ScoreboardDsl(internal val plugin: Plugin) {
     // A list of users who can view the scoreboard
     private val players = mutableListOf<WeakReference<Player>>()
@@ -131,7 +130,6 @@ class ScoreboardDsl(internal val plugin: Plugin) {
     /**
      * Sets the title of this scoreboard. This method is invoked every time [updateTitle] is called
      */
-    @ScoreboardDslMarker
     fun title(updater: () -> Component) {
         this.titleHandler = updater
     }
@@ -151,7 +149,6 @@ class ScoreboardDsl(internal val plugin: Plugin) {
      * To prevent flickering of the scoreboard, only lines that have changed will be re-sent to
      * players
      */
-    @ScoreboardDslMarker
     fun lines(handler: LineBuilder.() -> Unit) {
         this.lineHandler = handler
     }
@@ -159,7 +156,6 @@ class ScoreboardDsl(internal val plugin: Plugin) {
     /**
      * Invoked once when this scoreboard is first shown. Perform any one-time set up here
      */
-    @ScoreboardDslMarker
     fun onInitialize(body: () -> Unit) {
         this.onInitialize = body
     }
@@ -167,7 +163,6 @@ class ScoreboardDsl(internal val plugin: Plugin) {
     /**
      * Gets or creates the team with the given [name] and returns a [TeamBuilder]
      */
-    @ScoreboardDslMarker
     fun team(name: String, body: TeamBuilder.() -> Unit) {
         val builder = this.teams.computeIfAbsent(name) {
             TeamBuilder(
@@ -182,7 +177,6 @@ class ScoreboardDsl(internal val plugin: Plugin) {
      *
      * [DisplaySlot.SIDEBAR] cannot be overridden by this method. Use [lines] instead.
      */
-    @ScoreboardDslMarker
     fun objective(
         name: String,
         criteria: Criteria,
@@ -312,13 +306,13 @@ class ScoreboardDsl(internal val plugin: Plugin) {
  *
  * Additionally, LineBuilders can only support [NamedTextColor] due to Minecraft limitations
  */
+@ScoreboardDslMarker
 class LineBuilder {
     internal var lines = mutableMapOf<Int, () -> Component>()
 
     /**
      * Sets the line at [line] to the value returned by [body]
      */
-    @ScoreboardDslMarker
     fun line(line: Int, body: () -> Component) {
         check(line > 0) { "No more space on the scoreboard" }
         lines[line] = body
@@ -360,6 +354,7 @@ class LineBuilder {
  * [DisplaySlot.BELOW_NAME] and [DisplaySlot.PLAYER_LIST] to show objectives below the name and in
  * the player list respectively.
  */
+@ScoreboardDslMarker
 class ObjectiveBuilder(private val scoreboard: ScoreboardDsl, private val objective: Objective) {
 
     private var updateTask: BukkitTask? = null
@@ -380,7 +375,6 @@ class ObjectiveBuilder(private val scoreboard: ScoreboardDsl, private val object
     /**
      * Invoked periodically according to [updateInterval] to update the objective's values
      */
-    @ScoreboardDslMarker
     fun onUpdate(body: Objective.() -> Unit) {
         this.updateHandler = body
     }
@@ -416,6 +410,7 @@ class ObjectiveBuilder(private val scoreboard: ScoreboardDsl, private val object
 /**
  * Builder for managing scoreboard teams
  */
+@ScoreboardDslMarker
 class TeamBuilder(private val team: Team) {
 
     private val members = mutableSetOf<UUID>()
