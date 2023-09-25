@@ -21,5 +21,4 @@ dependency-reduced-pom.xml
 
 build/
 .gradle/
-gradle\.properties
 */out/
