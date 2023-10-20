@@ -7,4 +7,5 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     compileOnly("org.springframework:spring-tx:6.0.4")
     compileOnly("org.springframework:spring-context:6.0.0")
+    compileOnly("org.springframework.data:spring-data-jpa:3.1.3")
 }
