@@ -2,6 +2,8 @@ package me.mrkirby153.kcutils.spring.coroutine
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
 import me.mrkirby153.kcutils.spring.coroutine.CoroutineTransactionHandler.CoroutineTransaction
@@ -9,6 +11,7 @@ import mu.KotlinLogging
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.TransactionTemplate
 import java.util.UUID
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
@@ -27,10 +30,18 @@ val log = KotlinLogging.logger { }
  *  2. Initializing a global [TransactionTemplate] by calling [CoroutineTransactionHandler.setDefault]
  *  and invoking [transaction] directly
  */
-class CoroutineTransactionHandler(val template: TransactionTemplate) {
+@OptIn(DelicateCoroutinesApi::class)
+class CoroutineTransactionHandler(val template: TransactionTemplate, poolSize: Int = 5) {
 
-    @OptIn(DelicateCoroutinesApi::class)
-    val transactionThread = newSingleThreadContext("CoroutineTransactionThread")
+    private val transactionThreadPool: ConcurrentLinkedQueue<ExecutorCoroutineDispatcher>
+
+    init {
+        val threads = mutableListOf<ExecutorCoroutineDispatcher>()
+        for (i in 0..poolSize) {
+            threads.add(newSingleThreadContext("CoroutineTransactionThread-$i"))
+        }
+        transactionThreadPool = ConcurrentLinkedQueue(threads)
+    }
 
     /**
      * Runs the provided [block] inside of a transaction and returns its result
@@ -40,11 +51,16 @@ class CoroutineTransactionHandler(val template: TransactionTemplate) {
         return when {
             existingTransaction == null -> {
                 val context = CoroutineTransactionTemplate(template)
-                withContext(context + transactionThread) {
-                    log.debug { "Starting new transaction: ${context.transactionUuid}" }
-                    runTransactionally {
-                        block()
+                val thread = acquireThread()
+                try {
+                    withContext(context + thread) {
+                        log.debug { "Starting new transaction: ${context.transactionUuid}" }
+                        runTransactionally {
+                            block()
+                        }
                     }
+                } finally {
+                    releaseThread(thread)
                 }
             }
 
@@ -53,7 +69,7 @@ class CoroutineTransactionHandler(val template: TransactionTemplate) {
                     "Cannot use transactions across threads"
                 }
                 log.debug { "Re-using existing transaction ${existingTransaction.uuid}" }
-                withContext(coroutineContext + transactionThread) {
+                withContext(coroutineContext) {
                     block()
                 }
             }
@@ -92,6 +108,25 @@ class CoroutineTransactionHandler(val template: TransactionTemplate) {
             log.trace { "[$uuid] Marking transaction as complete" }
             transaction.complete()
         }
+    }
+
+    @PublishedApi
+    internal suspend fun acquireThread(): ExecutorCoroutineDispatcher {
+        if (transactionThreadPool.isEmpty()) {
+            log.trace("Transaction threadpool is exhausted.")
+            while (transactionThreadPool.isEmpty()) {
+                delay(5)
+            }
+        }
+        val thread = transactionThreadPool.poll() ?: return acquireThread()
+        log.trace("Acquired {}", thread)
+        return thread
+    }
+
+    @PublishedApi
+    internal fun releaseThread(thread: ExecutorCoroutineDispatcher) {
+        log.trace("Releasing transaction thread: {}", thread)
+        transactionThreadPool.add(thread)
     }
 
     companion object {
