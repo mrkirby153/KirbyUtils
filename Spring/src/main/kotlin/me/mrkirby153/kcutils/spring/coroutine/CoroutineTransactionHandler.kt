@@ -1,6 +1,8 @@
 package me.mrkirby153.kcutils.spring.coroutine
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
 import me.mrkirby153.kcutils.spring.coroutine.CoroutineTransactionHandler.CoroutineTransaction
 import mu.KotlinLogging
@@ -27,6 +29,9 @@ val log = KotlinLogging.logger { }
  */
 class CoroutineTransactionHandler(val template: TransactionTemplate) {
 
+    @OptIn(DelicateCoroutinesApi::class)
+    val transactionThread = newSingleThreadContext("CoroutineTransactionThread")
+
     /**
      * Runs the provided [block] inside of a transaction and returns its result
      */
@@ -35,8 +40,8 @@ class CoroutineTransactionHandler(val template: TransactionTemplate) {
         return when {
             existingTransaction == null -> {
                 val context = CoroutineTransactionTemplate(template)
-                log.debug { "Starting new transaction: ${context.transactionUuid}" }
-                withContext(context) {
+                withContext(context + transactionThread) {
+                    log.debug { "Starting new transaction: ${context.transactionUuid}" }
                     runTransactionally {
                         block()
                     }
@@ -44,13 +49,16 @@ class CoroutineTransactionHandler(val template: TransactionTemplate) {
             }
 
             existingTransaction.incomplete -> {
-                log.debug { "Re-using existing transaction: ${existingTransaction.transactionUuid}" }
-                withContext(coroutineContext) {
+                check(Thread.currentThread() == existingTransaction.owningThread) {
+                    "Cannot use transactions across threads"
+                }
+                log.debug { "Re-using existing transaction ${existingTransaction.uuid}" }
+                withContext(coroutineContext + transactionThread) {
                     block()
                 }
             }
 
-            else -> error("Attempted to start a new transaction within transaction: ${existingTransaction.transactionUuid}")
+            else -> error("Attempted to start a new transaction within a completed transaction: ${existingTransaction.uuid}")
         }
     }
 
@@ -63,7 +71,7 @@ class CoroutineTransactionHandler(val template: TransactionTemplate) {
         val status = transactionManager?.getTransaction(
             coroutineContext.transactionTemplate
         ) ?: error("Could not start a transaction")
-        val transaction = CoroutineTransaction()
+        val transaction = CoroutineTransaction(uuid = uuid, owningThread = Thread.currentThread())
         try {
             val result = withContext(transaction) {
                 block(status)
@@ -114,7 +122,11 @@ class CoroutineTransactionHandler(val template: TransactionTemplate) {
     /**
      * Coroutine context for storing the status of a transaction
      */
-    class CoroutineTransaction(private var completed: Boolean = false) :
+    class CoroutineTransaction(
+        private var completed: Boolean = false,
+        val uuid: String = "<<UNKNOWN>>",
+        val owningThread: Thread? = null
+    ) :
         AbstractCoroutineContextElement(CoroutineTransaction) {
         companion object Key : CoroutineContext.Key<CoroutineTransaction>
 
