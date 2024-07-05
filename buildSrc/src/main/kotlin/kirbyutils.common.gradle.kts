@@ -12,9 +12,9 @@ repositories {
 group = "me.mrkirby153"
 
 fun publishUrl() = if (project.version.toString().endsWith("-SNAPSHOT")) {
-    "https://repo.mrkirby153.com/repository/maven-snapshots/"
+    "https://repo.mrkirby153.com/snapshots"
 } else {
-    "https://repo.mrkirby153.com/repository/maven-releases"
+    "https://repo.mrkirby153.com/snapshots"
 }
 
 java {
@@ -32,6 +32,7 @@ publishing {
         maven {
             name = "mrkirby153"
             url = uri(publishUrl())
+            isAllowInsecureProtocol = true
             credentials {
                 username = System.getenv("REPO_USERNAME")
                 password = System.getenv("REPO_PASSWORD")
