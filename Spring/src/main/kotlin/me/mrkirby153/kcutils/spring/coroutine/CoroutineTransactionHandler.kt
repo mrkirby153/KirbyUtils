@@ -1,6 +1,7 @@
 package me.mrkirby153.kcutils.spring.coroutine
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withContext
 import me.mrkirby153.kcutils.spring.coroutine.CoroutineTransactionHandler.CoroutineTransaction
 import mu.KotlinLogging
@@ -12,7 +13,11 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
 
-val log = KotlinLogging.logger { }
+@PublishedApi
+internal val log = KotlinLogging.logger { }
+
+@PublishedApi
+internal val silentExceptions = listOf(TimeoutCancellationException::class)
 
 /**
  * Handler for transaction management in coroutines.
@@ -85,7 +90,9 @@ class CoroutineTransactionHandler(val template: TransactionTemplate, poolSize: I
             }
             return result
         } catch (ex: Throwable) {
-            log.error(ex) { "[$uuid] Caught exception from transaction, initiating rollback" }
+            if (ex::class !in silentExceptions) {
+                log.error(ex) { "[$uuid] Caught exception from transaction, initiating rollback" }
+            }
             transactionManager.rollback(status)
             throw ex
         } finally {
