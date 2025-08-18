@@ -166,14 +166,20 @@ class ScoreboardDsl(internal val plugin: Plugin) {
     /**
      * Gets or creates the team with the given [name] and returns a [TeamBuilder]
      */
-    fun team(name: String, body: TeamBuilder.() -> Unit) {
+    fun team(name: String, body: TeamBuilder.() -> Unit): TeamBuilder {
         val builder = this.teams.computeIfAbsent(name) {
             TeamBuilder(
                 scoreboard.registerNewTeam(it)
             )
         }
         builder.body()
+        return builder
     }
+
+    /**
+     * Gets a team by its [name].
+     */
+    fun team(name: String) = teams[name]
 
     /**
      * Sets the format to use when displaying numbers

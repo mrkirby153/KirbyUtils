@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Subcommand
-import io.papermc.paper.scoreboard.numbers.NumberFormat
 import me.mrkirby153.kcutils.Chat
 import me.mrkirby153.kcutils.Time
 import me.mrkirby153.kcutils.extensions.glowing
@@ -16,11 +15,10 @@ import me.mrkirby153.kcutils.extensions.setScore
 import me.mrkirby153.kcutils.extensions.toComponent
 import me.mrkirby153.kcutils.gui.gui
 import me.mrkirby153.kcutils.scoreboard.ScoreboardDsl
+import me.mrkirby153.kcutils.scoreboard.TeamBuilder
 import me.mrkirby153.kcutils.scoreboard.scoreboard
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.StyleBuilderApplicable
-import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -122,7 +120,7 @@ class TestPlugin : JavaPlugin(), Listener {
                     canSeeFriendlyInvisibles = true
                     prefix = Component.text("[PREFIX]").color(NamedTextColor.GRAY)
                     suffix = Component.text("[SUFFIX]").color(NamedTextColor.YELLOW).italic()
-                }
+                }.add(player)
             }
         }.also {
             scoreboards[player.uniqueId] = it
