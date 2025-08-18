@@ -67,15 +67,15 @@ inline val ItemStack.flags: ItemFlags?
 
 inline var ItemMeta.glowing: Boolean
     get() {
-        return this.hasEnchant(Enchantment.PROTECTION_ENVIRONMENTAL)
+        return this.hasEnchant(Enchantment.PROTECTION)
     }
     set(value) {
         if (value) {
             check(this.enchants.isEmpty()) { "Attempting to mark a previously enchanted item as glowing" }
-            this.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true)
+            this.addEnchant(Enchantment.PROTECTION, 1, true)
             flags[ItemFlag.HIDE_ENCHANTS] = true
         } else {
-            this.removeEnchant(Enchantment.PROTECTION_ENVIRONMENTAL)
+            this.removeEnchant(Enchantment.PROTECTION)
         }
     }
 

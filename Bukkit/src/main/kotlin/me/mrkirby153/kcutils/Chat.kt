@@ -1,5 +1,7 @@
 package me.mrkirby153.kcutils
 
+import me.mrkirby153.kcutils.Chat.hyperlink
+import me.mrkirby153.kcutils.Chat.message
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.event.ClickEvent
@@ -32,13 +34,34 @@ object Chat {
      *
      * @param message The message to format
      * @param color   The color of the message
+     * @param reset   If all decorations should be reset
      * @param decoration  Optional styles to apply to the chat
      *
      * @return A [Component]
      */
     @JvmStatic
-    fun formattedChat(message: String, color: TextColor, vararg decoration: TextDecoration) =
-        Component.text(message).decorate(*decoration).color(color)
+    fun formattedChat(
+        message: String,
+        color: TextColor,
+        reset: Boolean,
+        vararg decoration: TextDecoration
+    ): Component {
+        val decorations = mutableMapOf<TextDecoration, TextDecoration.State>()
+        decoration.forEach { decorations[it] = TextDecoration.State.TRUE }
+        if (reset) {
+            TextDecoration.entries.filter { it !in decoration }
+                .forEach { decorations[it] = TextDecoration.State.FALSE }
+        }
+        return Component.text(message).decorations(decorations).color(color)
+    }
+
+    fun formattedChat(
+        message: String,
+        color: TextColor,
+        vararg decoration: TextDecoration
+    ): Component {
+        return formattedChat(message, color, true, *decoration)
+    }
 
     /**
      * Generates a hyperlink to a URL

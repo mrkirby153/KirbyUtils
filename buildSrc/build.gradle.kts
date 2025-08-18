@@ -7,10 +7,16 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.22")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.10")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.8.20")
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }

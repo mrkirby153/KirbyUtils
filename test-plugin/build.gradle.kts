@@ -3,7 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     id("java")
     kotlin("jvm")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "8.3.0"
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":KirbyUtils-Bukkit"))
     implementation(project(":KirbyUtils-Common"))
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+    implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 }
 
 tasks.withType<ShadowJar> {
@@ -34,5 +35,11 @@ tasks {
     }
     named("compileKotlin") {
         dependsOn(":KirbyUtils-Bukkit:shadowJar")
+    }
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs = listOf("-java-parameters")
     }
 }

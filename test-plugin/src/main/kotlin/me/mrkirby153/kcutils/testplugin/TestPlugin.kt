@@ -1,8 +1,11 @@
 package me.mrkirby153.kcutils.testplugin
 
+import co.aikar.commands.BaseCommand
+import co.aikar.commands.PaperCommandManager
+import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.Subcommand
 import me.mrkirby153.kcutils.Chat
 import me.mrkirby153.kcutils.Time
-import me.mrkirby153.kcutils.extensions.data
 import me.mrkirby153.kcutils.extensions.glowing
 import me.mrkirby153.kcutils.extensions.italic
 import me.mrkirby153.kcutils.extensions.itemStack
@@ -15,13 +18,16 @@ import me.mrkirby153.kcutils.scoreboard.ScoreboardDsl
 import me.mrkirby153.kcutils.scoreboard.scoreboard
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.block.data.Waterlogged
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
@@ -30,21 +36,18 @@ import java.util.UUID
 class TestPlugin : JavaPlugin(), Listener {
 
     private val scoreboards = mutableMapOf<UUID, ScoreboardDsl>()
+    private lateinit var commandManager: PaperCommandManager
 
     override fun onEnable() {
         val start = System.currentTimeMillis()
         logger.info("Hello, World!")
+
+        commandManager = PaperCommandManager(this)
+        commandManager.registerCommand(Commands(this))
+        server.pluginManager.registerEvents(this, this)
+
         val end = System.currentTimeMillis()
         logger.info("Initialized in ${Time.format(1, end - start)}")
-        getCommand("test-command")?.setExecutor { sender, command, label, args ->
-            if (sender !is Player) {
-                sender.sendMessage(Chat.error("You must be a player to perform this command"))
-                return@setExecutor true
-            }
-            val gui = getGui(sender)
-            gui.open(sender)
-            true
-        }
     }
 
 
@@ -62,7 +65,13 @@ class TestPlugin : JavaPlugin(), Listener {
             onUpdate {
                 item?.meta {
                     glowing = player.world.time < 10000
-                    lore(listOf(miniMessage("<green>Current Time:</green> <yellow>${player.world.time}").italic(false)))
+                    lore(
+                        listOf(
+                            miniMessage("<green>Current Time:</green> <yellow>${player.world.time}").italic(
+                                false
+                            )
+                        )
+                    )
                 }
             }
         }
@@ -120,5 +129,41 @@ class TestPlugin : JavaPlugin(), Listener {
     fun clearScoreboard(player: Player) {
         val existing = scoreboards.remove(player.uniqueId) ?: return
         existing.hide(player)
+    }
+
+    @EventHandler
+    fun onJoin(event: PlayerJoinEvent) {
+        val scoreboard = getScoreboardForUser(event.player)
+        scoreboard.show(event.player)
+    }
+
+    @EventHandler
+    fun onLeave(event: PlayerQuitEvent) {
+        clearScoreboard(event.player)
+    }
+}
+
+@CommandAlias("test-command")
+class Commands(private val plugin: TestPlugin) : BaseCommand() {
+
+    @Subcommand("gui")
+    fun gui(player: Player) {
+        plugin.getGui(player).open(player)
+    }
+
+    @Subcommand("chat-test")
+    fun chatTest(sender: CommandSender) {
+        val component1 =
+            Chat.formattedChat("This is a test message", NamedTextColor.GREEN, TextDecoration.BOLD)
+                .append(
+                    Chat.formattedChat(" This is another message", NamedTextColor.YELLOW)
+                )
+        val component2 =
+            Chat.formattedChat("This is a third message", NamedTextColor.BLUE, TextDecoration.BOLD)
+                .append(
+                    Chat.formattedChat(" This is the final message", NamedTextColor.YELLOW, false)
+                )
+        sender.sendMessage(component1)
+        sender.sendMessage(component2)
     }
 }
