@@ -27,11 +27,11 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: adopt
-          java-version: 17
+          java-version: 21
       - name: Set Up Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 8.2
+          gradle-version: 8.14.3
       - name: Build Docs
         run: ./gradlew dokkaHtmlMultiModule
       - name: Upload Artifact

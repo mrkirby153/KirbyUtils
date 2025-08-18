@@ -19,7 +19,7 @@ fun publishUrl() = if (project.version.toString().endsWith("-SNAPSHOT")) {
 
 java {
     withSourcesJar()
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 publishing {

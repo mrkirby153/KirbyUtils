@@ -4,7 +4,7 @@ plugins {
     id("java")
     kotlin("jvm")
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("xyz.jpenilla.run-paper") version "2.1.0"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 repositories {
@@ -18,7 +18,7 @@ repositories {
 dependencies {
     implementation(project(":KirbyUtils-Bukkit"))
     implementation(project(":KirbyUtils-Common"))
-    compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
 }
 
 tasks.withType<ShadowJar> {
@@ -29,14 +29,10 @@ tasks.withType<ShadowJar> {
 tasks {
     val jar by getting(Jar::class)
     runServer {
-        minecraftVersion("1.19.2")
+        minecraftVersion("1.21.8")
         dependsOn(jar)
     }
     named("compileKotlin") {
         dependsOn(":KirbyUtils-Bukkit:shadowJar")
     }
-}
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }

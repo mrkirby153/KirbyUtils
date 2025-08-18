@@ -8,7 +8,6 @@ plugins {
 repositories {
     maven(url = "https://oss.sonatype.org/content/groups/public/")
     maven(url = "https://repo.papermc.io/repository/maven-public/")
-    maven(url = "https://repo.dmulloy2.net/content/groups/public/")
     maven(url = "https://repo.aikar.co/nexus/content/groups/aikar/")
 }
 
@@ -16,8 +15,8 @@ dependencies {
     implementation(project(":KirbyUtils-Common"))
     implementation("co.aikar:acf-core:0.5.0-SNAPSHOT")
     implementation("net.kyori:adventure-text-serializer-legacy:4.14.0")
-    compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.4.0-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+    compileOnly("net.dmulloy2:ProtocolLib:5.4.0")
 }
 
 tasks.withType<ShadowJar> {
