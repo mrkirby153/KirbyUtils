@@ -1,5 +1,6 @@
 package me.mrkirby153.kcutils.scoreboard
 
+import io.papermc.paper.scoreboard.numbers.NumberFormat
 import me.mrkirby153.kcutils.extensions.runnable
 import me.mrkirby153.kcutils.extensions.toComponent
 import net.kyori.adventure.text.Component
@@ -63,6 +64,8 @@ class ScoreboardDsl(internal val plugin: Plugin) {
     private var onInitialize: () -> Unit = {}
 
     private var initialized = false
+
+    private var numberFormat: NumberFormat? = NumberFormat.blank()
 
     /**
      * The interval at which the title should update (in ticks). Set to `0` to disable updating.
@@ -173,6 +176,20 @@ class ScoreboardDsl(internal val plugin: Plugin) {
     }
 
     /**
+     * Sets the format to use when displaying numbers
+     */
+    fun numberFormat(format: NumberFormat?) {
+        this.numberFormat = format
+    }
+
+    /**
+     * Enables numbers on the scoreboard
+     */
+    fun enableNumbers() {
+        numberFormat(null)
+    }
+
+    /**
      * Creates a new objective with the provided [name], [criteria], and [slot].
      *
      * [DisplaySlot.SIDEBAR] cannot be overridden by this method. Use [lines] instead.
@@ -208,6 +225,9 @@ class ScoreboardDsl(internal val plugin: Plugin) {
     fun updateLines() {
         val builder = LineBuilder()
         val objective = scoreboard.getObjective(DisplaySlot.SIDEBAR) ?: return
+        if (objective.numberFormat() != numberFormat) {
+            objective.numberFormat(numberFormat)
+        }
         builder.apply(lineHandler)
 
         val existing = mutableMapOf<Int, String>()
