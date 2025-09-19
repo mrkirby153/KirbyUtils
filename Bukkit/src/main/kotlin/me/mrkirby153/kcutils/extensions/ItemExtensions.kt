@@ -1,5 +1,6 @@
 package me.mrkirby153.kcutils.extensions
 
+import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
@@ -65,6 +66,7 @@ inline val ItemMeta.flags: ItemFlags
 inline val ItemStack.flags: ItemFlags?
     get() = this.itemMeta?.flags
 
+@Deprecated("Use ItemStack.glowing")
 inline var ItemMeta.glowing: Boolean
     get() {
         return this.hasEnchant(Enchantment.PROTECTION)
@@ -76,6 +78,18 @@ inline var ItemMeta.glowing: Boolean
             flags[ItemFlag.HIDE_ENCHANTS] = true
         } else {
             this.removeEnchant(Enchantment.PROTECTION)
+        }
+    }
+
+inline var ItemStack.glowing: Boolean
+    get() {
+        return this.getData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE) == true
+    }
+    set(value) {
+        if (value) {
+            this.setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
+        } else {
+            this.unsetData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE)
         }
     }
 
