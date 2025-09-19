@@ -18,6 +18,7 @@ import java.util.UUID
  *
  * @param plugin The owning plugin
  */
+@Deprecated("Use ItemCooldownManager instead")
 class CooldownManager(plugin: JavaPlugin) : Module<JavaPlugin>("cooldown", plugin), Runnable {
 
     /**

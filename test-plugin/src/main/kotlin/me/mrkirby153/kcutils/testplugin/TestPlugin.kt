@@ -6,6 +6,8 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Subcommand
 import me.mrkirby153.kcutils.Chat
 import me.mrkirby153.kcutils.Time
+import me.mrkirby153.kcutils.cooldown.ItemCooldown
+import me.mrkirby153.kcutils.cooldown.ItemCooldownManager
 import me.mrkirby153.kcutils.extensions.glowing
 import me.mrkirby153.kcutils.extensions.italic
 import me.mrkirby153.kcutils.extensions.itemStack
@@ -15,7 +17,6 @@ import me.mrkirby153.kcutils.extensions.setScore
 import me.mrkirby153.kcutils.extensions.toComponent
 import me.mrkirby153.kcutils.gui.gui
 import me.mrkirby153.kcutils.scoreboard.ScoreboardDsl
-import me.mrkirby153.kcutils.scoreboard.TeamBuilder
 import me.mrkirby153.kcutils.scoreboard.scoreboard
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -26,7 +27,9 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
 import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
@@ -34,10 +37,14 @@ import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import java.util.UUID
 
+
+val TEST_COOLDOWN = ItemCooldown(20 * 5, "kcutils", "test_cooldown")
+
 class TestPlugin : JavaPlugin(), Listener {
 
     private val scoreboards = mutableMapOf<UUID, ScoreboardDsl>()
     private lateinit var commandManager: PaperCommandManager
+    val cooldownManager = ItemCooldownManager(this)
 
     override fun onEnable() {
         val start = System.currentTimeMillis()
@@ -46,6 +53,7 @@ class TestPlugin : JavaPlugin(), Listener {
         commandManager = PaperCommandManager(this)
         commandManager.registerCommand(Commands(this))
         server.pluginManager.registerEvents(this, this)
+        cooldownManager.init()
 
         val end = System.currentTimeMillis()
         logger.info("Initialized in ${Time.format(1, end - start)}")
@@ -143,6 +151,31 @@ class TestPlugin : JavaPlugin(), Listener {
     fun onLeave(event: PlayerQuitEvent) {
         clearScoreboard(event.player)
     }
+
+    @EventHandler(ignoreCancelled = true)
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        val item = event.player.inventory.itemInMainHand
+        if (event.action != Action.RIGHT_CLICK_BLOCK) {
+            return
+        }
+        if (item.type == Material.AIR) {
+            return
+        }
+        if (cooldownManager.use(event.player, TEST_COOLDOWN)) {
+            event.player.sendMessage { Chat.message("Cooldown", "You've used the cooldown!") }
+        } else {
+            val until = cooldownManager.get(event.player, TEST_COOLDOWN)!!
+            val duration = until - System.currentTimeMillis()
+            event.player.sendMessage {
+                Chat.message(
+                    "Cooldown",
+                    "This item is on cooldown for {time}!",
+                    "time" to Time.format(1, duration)
+                )
+            }
+        }
+    }
+
 }
 
 @CommandAlias("test-command")
@@ -167,5 +200,20 @@ class Commands(private val plugin: TestPlugin) : BaseCommand() {
                 )
         sender.sendMessage(component1)
         sender.sendMessage(component2)
+    }
+
+    @Subcommand("cooldown")
+    fun cooldown(sender: Player) {
+        val item = itemStack(Material.COMPASS)
+        item.glowing = true
+        plugin.cooldownManager.attach(item, TEST_COOLDOWN)
+        sender.give(item)
+        sender.sendMessage(Chat.formattedChat("Here you go!", NamedTextColor.GRAY))
+    }
+
+    @Subcommand("cooldown-reset")
+    fun cooldownReset(sender: Player) {
+        plugin.cooldownManager.reset(sender, TEST_COOLDOWN)
+        sender.sendMessage(Chat.message("Cooldown", "Cooldown reset!"))
     }
 }

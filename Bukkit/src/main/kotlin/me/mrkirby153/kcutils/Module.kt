@@ -1,6 +1,7 @@
 package me.mrkirby153.kcutils
 
 import org.bukkit.configuration.file.FileConfiguration
+import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.system.measureTimeMillis
@@ -42,7 +43,15 @@ abstract class Module<out T : JavaPlugin>(private val name: String, protected va
             }
         }
         loaded = true
-        log("Loaded in ${if (loadTime < 1) "< 1 millisecond" else Time.format(1, loadTime, Time.TimeUnit.FIT)}")
+        log(
+            "Loaded in ${
+                if (loadTime < 1) "< 1 millisecond" else Time.format(
+                    1,
+                    loadTime,
+                    Time.TimeUnit.FIT
+                )
+            }"
+        )
     }
 
     /**
@@ -61,7 +70,15 @@ abstract class Module<out T : JavaPlugin>(private val name: String, protected va
             }
         }
         loaded = false
-        log("Loaded in ${if (unloadTime < 1) "< 1 millisecond" else Time.format(1, unloadTime, Time.TimeUnit.FIT)}")
+        log(
+            "Loaded in ${
+                if (unloadTime < 1) "< 1 millisecond" else Time.format(
+                    1,
+                    unloadTime,
+                    Time.TimeUnit.FIT
+                )
+            }"
+        )
     }
 
     /**
@@ -140,9 +157,11 @@ abstract class Module<out T : JavaPlugin>(private val name: String, protected va
      * @param delay The initial delay before running the task
      * @param interval The interval in which the task is to run
      * @param task The task to run
+     *
+     * @return The id of the task
      */
-    fun scheduleRepeating(delay: Long, interval: Long, task: () -> Unit) {
-        plugin.server.scheduler.scheduleSyncRepeatingTask(plugin, task, delay, interval)
+    fun scheduleRepeating(delay: Long, interval: Long, task: () -> Unit): Int {
+        return plugin.server.scheduler.scheduleSyncRepeatingTask(plugin, task, delay, interval)
     }
 
     /**
@@ -151,8 +170,23 @@ abstract class Module<out T : JavaPlugin>(private val name: String, protected va
      * @param delay The initial delay before running the task
      * @param interval The interval in which the task is to run
      * @param runnable The task to run
+     *
+     * @return The id of the task
      */
-    fun scheduleRepeating(delay: Long, interval: Long, runnable: Runnable) {
-        plugin.server.scheduler.scheduleSyncRepeatingTask(plugin, runnable, delay, interval)
+    fun scheduleRepeating(delay: Long, interval: Long, runnable: Runnable): Int {
+        return plugin.server.scheduler.scheduleSyncRepeatingTask(plugin, runnable, delay, interval)
+    }
+
+    /**
+     * Cancels a task with the provided id
+     *
+     * @param id The id of the task to cancel
+     */
+    fun cancelTask(id: Int) {
+        plugin.server.scheduler.cancelTask(id)
+    }
+
+    fun unregisterListener(listener: Listener) {
+        HandlerList.unregisterAll(listener)
     }
 }
