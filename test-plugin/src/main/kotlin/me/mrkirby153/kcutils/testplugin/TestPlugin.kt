@@ -13,6 +13,7 @@ import me.mrkirby153.kcutils.extensions.italic
 import me.mrkirby153.kcutils.extensions.itemStack
 import me.mrkirby153.kcutils.extensions.meta
 import me.mrkirby153.kcutils.extensions.miniMessage
+import me.mrkirby153.kcutils.extensions.namespacedKey
 import me.mrkirby153.kcutils.extensions.setScore
 import me.mrkirby153.kcutils.extensions.toComponent
 import me.mrkirby153.kcutils.gui.gui
@@ -32,6 +33,7 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
@@ -159,7 +161,11 @@ class TestPlugin : JavaPlugin(), Listener {
         if (event.action != Action.RIGHT_CLICK_BLOCK) {
             return
         }
-        if (item.type == Material.AIR) {
+        if (item.persistentDataContainer.get(
+                this.namespacedKey("type"),
+                PersistentDataType.STRING
+            ) != "test_cooldown_item"
+        ) {
             return
         }
         if (cooldownManager.use(event.player, TEST_COOLDOWN)) {
@@ -206,6 +212,13 @@ class Commands(private val plugin: TestPlugin) : BaseCommand() {
     @Subcommand("cooldown")
     fun cooldown(sender: Player) {
         val item = itemStack(Material.COMPASS)
+        item.editPersistentDataContainer { container ->
+            container.set(
+                plugin.namespacedKey("type"),
+                PersistentDataType.STRING,
+                "test_cooldown_item"
+            )
+        }
         item.glowing = true
         plugin.cooldownManager.attach(item, TEST_COOLDOWN)
         sender.give(item)
