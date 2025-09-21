@@ -36,9 +36,10 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import java.util.UUID
+import kotlin.time.Duration.Companion.seconds
 
 
-val TEST_COOLDOWN = ItemCooldown(20 * 5, "kcutils", "test_cooldown")
+val TEST_COOLDOWN = ItemCooldown(5.seconds, "test_cooldown")
 
 class TestPlugin : JavaPlugin(), Listener {
 
@@ -72,8 +73,8 @@ class TestPlugin : JavaPlugin(), Listener {
                 }
             }
             onUpdate {
+                item?.glowing = player.world.time < 10000
                 item?.meta {
-                    glowing = player.world.time < 10000
                     lore(
                         listOf(
                             miniMessage("<green>Current Time:</green> <yellow>${player.world.time}").italic(
